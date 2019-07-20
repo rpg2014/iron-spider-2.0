@@ -2,6 +2,7 @@ package com.rpg2014.heroku;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.glassfish.jersey.server.ResourceConfig;
 
 /**
  * This class launches the web application in an embedded Jetty container. This is the entry point to your application. The Java
@@ -16,9 +17,11 @@ public class Main {
         if (webPort == null || webPort.isEmpty()) {
             webPort = "8080";
         }
-
+        ResourceConfig config = new Application();
         final Server server = new Server(Integer.valueOf(webPort));
+
         final WebAppContext root = new WebAppContext();
+
 
         root.setContextPath("/");
         // Parent loader priority is a class loader setting that Jetty accepts.
@@ -27,6 +30,7 @@ public class Main {
         // container. Setting parent loader priority to true changes this behavior.
         // Read more here: http://wiki.eclipse.org/Jetty/Reference/Jetty_Classloading
         root.setParentLoaderPriority(true);
+
 
         final String webappDirLocation = "src/main/webapp/";
         root.setDescriptor(webappDirLocation + "/WEB-INF/web.xml");

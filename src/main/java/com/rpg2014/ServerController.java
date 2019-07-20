@@ -4,14 +4,15 @@ import com.rpg2014.model.ServerControllerInterface;
 import com.rpg2014.model.Status;
 import com.rpg2014.model.StatusResponse;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.annotation.Resource;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 /**
  * Root resource (exposed at "myresource" path)
  */
+
+@Path("/server")
 public class ServerController implements ServerControllerInterface {
 
     /**
@@ -20,10 +21,20 @@ public class ServerController implements ServerControllerInterface {
      *
      * @return json response
      */
+    @Override
     @GET
+    @Path("/status")
     @Produces(MediaType.APPLICATION_JSON)
     public StatusResponse serverStatus() {
-        Status status = EC2Wrapper.getServerStatus();
+//        Status status = EC2Wrapper.getServerStatus();
         return StatusResponse.builder().status(Status.Terminated).build();
+    }
+
+    @Override
+    @POST
+    @Path("/start")
+    public boolean testStart() {
+        TestSuspended.start();
+        return false;
     }
 }

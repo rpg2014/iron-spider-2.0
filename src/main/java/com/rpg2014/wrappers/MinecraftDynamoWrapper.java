@@ -21,19 +21,16 @@ public class MinecraftDynamoWrapper {
     private static final String SERVER_RUNNING = "serverRunning";
     private static final String SNAPSHOT_ID = "snapshotId";
     private static final String VALUE = "value";
-    private HashMap<String, AttributeValue> key;
-    private HashMap<String, AttributeValueUpdate> updatedValues;
 
-    DynamoDbClient client;
+    private DynamoDbClient client;
 
     private MinecraftDynamoWrapper() {
         client = DynamoDbClient.builder().region(Region.US_EAST_1).build();
-        key = new HashMap<>();
-        updatedValues = new HashMap<>();
     }
 
     public boolean isServerRunning() {
         try {
+            HashMap<String, AttributeValue> key = new HashMap<>();
             return getItem(key, SERVER_RUNNING).get(VALUE).bool();
         } catch (DynamoDbException e) {
             throw new InternalServerErrorException("Failed to get isServerRunning caught a DynamoDbException");
@@ -42,16 +39,24 @@ public class MinecraftDynamoWrapper {
 
     public void setServerRunning() {
         try{
+            HashMap<String, AttributeValue> key = new HashMap<>();
+            HashMap<String, AttributeValueUpdate> updatedValues = new HashMap<>();
             setItem(key, updatedValues, SERVER_RUNNING, true);
         } catch (DynamoDbException e) {
             throw new InternalServerErrorException("Failed to setServerRunning");
         }
     }
-/*
-    public void setServerStopped() {
-        table.putItem(new Item().with(ITEM_ID,SERVER_RUNNING).with(VALUE, false));
-    }
 
+    public void setServerStopped() {
+         try{
+            HashMap<String, AttributeValue> key = new HashMap<>();
+            HashMap<String, AttributeValueUpdate> updatedValues = new HashMap<>();
+            setItem(key, updatedValues, SERVER_RUNNING, false);
+        } catch (DynamoDbException e) {
+            throw new InternalServerErrorException("Failed to setServerStopped");
+        }
+    }
+/*
     public String getSnapshotId() {
         return table.getItem(ITEM_ID, SNAPSHOT_ID).getString(VALUE);
     }
@@ -78,7 +83,6 @@ public class MinecraftDynamoWrapper {
     }
 */
     private Map<String, AttributeValue> getItem(HashMap<String, AttributeValue> map, final String str) {
-        map = new HashMap<>();
         map.put(ITEM_ID, AttributeValue.builder().s(str).build());
         GetItemRequest request = GetItemRequest.builder().key(map).tableName("minecraftServerDetails").build();
         return client.getItem(request).item();

@@ -38,7 +38,7 @@ public class MinecraftDynamoWrapper {
     }
 
     public void setServerRunning() {
-        try{
+        try {
             HashMap<String, AttributeValue> key = new HashMap<>();
             HashMap<String, AttributeValueUpdate> updatedValues = new HashMap<>();
             setItem(key, updatedValues, SERVER_RUNNING, true);
@@ -48,7 +48,7 @@ public class MinecraftDynamoWrapper {
     }
 
     public void setServerStopped() {
-         try{
+        try {
             HashMap<String, AttributeValue> key = new HashMap<>();
             HashMap<String, AttributeValueUpdate> updatedValues = new HashMap<>();
             setItem(key, updatedValues, SERVER_RUNNING, false);
@@ -56,32 +56,33 @@ public class MinecraftDynamoWrapper {
             throw new InternalServerErrorException("Failed to setServerStopped");
         }
     }
-/*
-    public String getSnapshotId() {
-        return table.getItem(ITEM_ID, SNAPSHOT_ID).getString(VALUE);
-    }
 
-    public void setSnapshotId(final String snapshotId){
-        table.putItem(new Item().with(ITEM_ID, SNAPSHOT_ID).with(VALUE, snapshotId));
-    }
+    /*
+        public String getSnapshotId() {
+            return table.getItem(ITEM_ID, SNAPSHOT_ID).getString(VALUE);
+        }
+
+        public void setSnapshotId(final String snapshotId){
+            table.putItem(new Item().with(ITEM_ID, SNAPSHOT_ID).with(VALUE, snapshotId));
+        }
 
 
-    public String getInstanceId() {
-        return table.getItem(ITEM_ID, INSTANCE_ID).getString(VALUE);
-    }
+        public String getInstanceId() {
+            return table.getItem(ITEM_ID, INSTANCE_ID).getString(VALUE);
+        }
 
-    public void setInstanceId(final String instanceId) {
-        table.putItem(new Item().with(ITEM_ID, INSTANCE_ID).with(VALUE, instanceId));
-    }
+        public void setInstanceId(final String instanceId) {
+            table.putItem(new Item().with(ITEM_ID, INSTANCE_ID).with(VALUE, instanceId));
+        }
 
-    public String getAmiID() {
-        return table.getItem(ITEM_ID, AMI_ID).getString(VALUE);
-    }
+        public String getAmiID() {
+            return table.getItem(ITEM_ID, AMI_ID).getString(VALUE);
+        }
 
-    public void setAmiId(final String amiId) {
-        table.putItem(new Item().with(ITEM_ID, AMI_ID).with(VALUE, amiId));
-    }
-*/
+        public void setAmiId(final String amiId) {
+            table.putItem(new Item().with(ITEM_ID, AMI_ID).with(VALUE, amiId));
+        }
+    */
     private Map<String, AttributeValue> getItem(HashMap<String, AttributeValue> map, final String str) {
         map.put(ITEM_ID, AttributeValue.builder().s(str).build());
         GetItemRequest request = GetItemRequest.builder().key(map).tableName("minecraftServerDetails").build();
@@ -89,18 +90,18 @@ public class MinecraftDynamoWrapper {
     }
 
     private void setItem(HashMap<String, AttributeValue> itemKey, HashMap<String, AttributeValueUpdate> updatedValues,
-                                                      final String str, boolean val) {
+                         final String str, boolean val) {
         itemKey.put(ITEM_ID, AttributeValue.builder().s(str).build());
-        updatedValues.put(ITEM_ID, AttributeValueUpdate.builder()
-                     .value(AttributeValue.builder().s(Boolean.toString(val)).build())
-                     .action(AttributeAction.PUT)
-                     .build());
+        updatedValues.put(VALUE, AttributeValueUpdate.builder()
+                .value(AttributeValue.builder().s(Boolean.toString(val)).build())
+                .action(AttributeAction.PUT)
+                .build());
         UpdateItemRequest request = UpdateItemRequest.builder()
-                                    .tableName("spencerIsDumb")
-                                    .key(itemKey)
-                                    .attributeUpdates(updatedValues)
-                                    .build();
-        try{
+                .tableName("spencerIsDumb")
+                .key(itemKey)
+                .attributeUpdates(updatedValues)
+                .build();
+        try {
             client.updateItem(request);
         } catch (ResourceNotFoundException e) {
             System.err.println("failed on client.updateItem in setItem()");

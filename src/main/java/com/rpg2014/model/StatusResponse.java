@@ -5,5 +5,6 @@ import lombok.NonNull;
 @Builder
 public class StatusResponse {
     @NonNull
-    Status status;
+    //Status status;
+    boolean status;
 }

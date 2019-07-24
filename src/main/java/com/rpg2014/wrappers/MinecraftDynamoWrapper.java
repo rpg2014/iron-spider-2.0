@@ -21,8 +21,6 @@ public class MinecraftDynamoWrapper {
     private static final String SERVER_RUNNING = "serverRunning";
     private static final String SNAPSHOT_ID = "snapshotId";
     private static final String VALUE = "value";
-    private static HashMap<String, AttributeValue> key;
-    private static HashMap<String, AttributeValueUpdate> updatedValues;
     private DynamoDbClient client;
 
     private MinecraftDynamoWrapper() {
@@ -31,8 +29,7 @@ public class MinecraftDynamoWrapper {
 
     public boolean isServerRunning() {
         try {
-            key = new HashMap<>();
-            return getItem(key, SERVER_RUNNING).get(VALUE).bool();
+            return getItem(SERVER_RUNNING).get(VALUE).bool();
         } catch (DynamoDbException e) {
             throw new InternalServerErrorException("Failed to get isServerRunning");
         }
@@ -40,9 +37,7 @@ public class MinecraftDynamoWrapper {
 
     public void setServerRunning() {
         try {
-            key = new HashMap<>();
-            updatedValues = new HashMap<>();
-            setItem(key, updatedValues, SERVER_RUNNING, true);
+            setItem(SERVER_RUNNING, true);
         } catch (DynamoDbException e) {
             throw new InternalServerErrorException("Failed to setServerRunning");
         }
@@ -50,9 +45,7 @@ public class MinecraftDynamoWrapper {
 
     public void setServerStopped() {
         try {
-            key = new HashMap<>();
-            updatedValues = new HashMap<>();
-            setItem(key, updatedValues, SERVER_RUNNING, false);
+            setItem(SERVER_RUNNING, false);
         } catch (DynamoDbException e) {
             throw new InternalServerErrorException("Failed to setServerStopped");
         }
@@ -60,8 +53,7 @@ public class MinecraftDynamoWrapper {
 
     public String getSnapshotId() {
         try {
-            key = new HashMap<>();
-            return getItem(key, SNAPSHOT_ID).get(VALUE).toString();
+            return getItem(SNAPSHOT_ID).get(VALUE).toString();
         } catch (DynamoDbException e) {
             throw new InternalServerErrorException("Failed to getSnapshotId");
         }
@@ -69,9 +61,7 @@ public class MinecraftDynamoWrapper {
 
     public void setSnapshotId(final String snapshotId) {
         try {
-            key = new HashMap<>();
-            updatedValues = new HashMap<>();
-            setItem(key, updatedValues, SNAPSHOT_ID, snapshotId);
+            setItem(SNAPSHOT_ID, snapshotId);
         } catch (DynamoDbException e) {
             throw new InternalServerErrorException("Failed to setSnapshotId");
         }
@@ -79,8 +69,7 @@ public class MinecraftDynamoWrapper {
 
     public String getInstanceId() {
         try {
-            key = new HashMap<>();
-            return getItem(key, INSTANCE_ID).get(VALUE).toString();
+            return getItem(INSTANCE_ID).get(VALUE).toString();
         } catch (DynamoDbException e) {
             throw new InternalServerErrorException("Failed to getInstanceId");
         }
@@ -88,10 +77,8 @@ public class MinecraftDynamoWrapper {
 
 
     public void setInstanceId(final String instanceId) {
-        try {
-            key = new HashMap<>();
-            updatedValues = new HashMap<>();
-            setItem(key, updatedValues, INSTANCE_ID, instanceId);
+        try { ;
+            setItem(INSTANCE_ID, instanceId);
         } catch (DynamoDbException e) {
             throw new InternalServerErrorException("Failed to setInstanceId");
         }
@@ -99,8 +86,7 @@ public class MinecraftDynamoWrapper {
 
     public String getAmiID() {
         try {
-            key = new HashMap<>();
-            return getItem(key, AMI_ID).get(VALUE).toString();
+            return getItem(AMI_ID).get(VALUE).toString();
         } catch (DynamoDbException e) {
             throw new InternalServerErrorException("Failed to getAmiId");
         }
@@ -108,23 +94,23 @@ public class MinecraftDynamoWrapper {
 
     public void setAmiId(final String amiId) {
         try {
-            key = new HashMap<>();
-            updatedValues = new HashMap<>();
-            setItem(key, updatedValues, AMI_ID, amiId);
+            setItem(AMI_ID, amiId);
         } catch (DynamoDbException e) {
             throw new InternalServerErrorException("Failed to setAmiId");
         }
     }
 
-    private Map<String, AttributeValue> getItem(HashMap<String, AttributeValue> map, final String str) {
-        map.put(ITEM_ID, AttributeValue.builder().s(str).build());
+    private Map<String, AttributeValue> getItem(final String itemId) {
+        HashMap<String, AttributeValue> map = new HashMap<>();
+        map.put(ITEM_ID, AttributeValue.builder().s(itemId).build());
         GetItemRequest request = GetItemRequest.builder().key(map).tableName("spencerIsDumb").build();
         return client.getItem(request).item();
     }
 
-    private void setItem(HashMap<String, AttributeValue> itemKey, HashMap<String, AttributeValueUpdate> updatedValues,
-                         final String str, boolean val) {
-        itemKey.put(ITEM_ID, AttributeValue.builder().s(str).build());
+    private void setItem(final String itemId, boolean val) {
+        HashMap<String, AttributeValue> itemKey = new HashMap<>();
+        HashMap<String, AttributeValueUpdate> updatedValues = new HashMap<>();
+        itemKey.put(ITEM_ID, AttributeValue.builder().s(itemId).build());
         updatedValues.put(VALUE, AttributeValueUpdate.builder()
                 .value(AttributeValue.builder().bool(val).build())
                 .action(AttributeAction.PUT)
@@ -141,8 +127,9 @@ public class MinecraftDynamoWrapper {
         }
     }
 
-    private void setItem(HashMap<String, AttributeValue> itemKey, HashMap<String, AttributeValueUpdate> updatedValues,
-                         final String str, String val) {
+    private void setItem(final String str, String val) {
+        HashMap<String, AttributeValue> itemKey = new HashMap<>();
+        HashMap<String, AttributeValueUpdate> updatedValues = new HashMap<>();
         itemKey.put(ITEM_ID, AttributeValue.builder().s(str).build());
         updatedValues.put(VALUE, AttributeValueUpdate.builder()
                 .value(AttributeValue.builder().s(val).build())

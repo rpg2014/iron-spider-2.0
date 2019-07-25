@@ -28,76 +28,42 @@ public class MinecraftDynamoWrapper {
     }
 
     public boolean isServerRunning() {
-        try {
+
             return getItem(SERVER_RUNNING).get(VALUE).bool();
-        } catch (DynamoDbException e) {
-            throw new InternalServerErrorException("Failed to get isServerRunning");
-        }
+
     }
 
     public void setServerRunning() {
-        try {
-            setItem(SERVER_RUNNING, true);
-        } catch (DynamoDbException e) {
-            throw new InternalServerErrorException("Failed to setServerRunning");
-        }
+        setItem(SERVER_RUNNING, true);
     }
 
     public void setServerStopped() {
-        try {
-            setItem(SERVER_RUNNING, false);
-        } catch (DynamoDbException e) {
-            throw new InternalServerErrorException("Failed to setServerStopped");
-        }
+        setItem(SERVER_RUNNING, false);
     }
 
     public String getSnapshotId() {
-        try {
-            return getItem(SNAPSHOT_ID).get(VALUE).toString();
-        } catch (DynamoDbException e) {
-            throw new InternalServerErrorException("Failed to getSnapshotId");
-        }
+        return getItem(SNAPSHOT_ID).get(VALUE).toString();
     }
 
     public void setSnapshotId(final String snapshotId) {
-        try {
-            setItem(SNAPSHOT_ID, snapshotId);
-        } catch (DynamoDbException e) {
-            throw new InternalServerErrorException("Failed to setSnapshotId");
-        }
+        setItem(SNAPSHOT_ID, snapshotId);
     }
 
     public String getInstanceId() {
-        try {
-            return getItem(INSTANCE_ID).get(VALUE).toString();
-        } catch (DynamoDbException e) {
-            throw new InternalServerErrorException("Failed to getInstanceId");
-        }
+        return getItem(INSTANCE_ID).get(VALUE).toString();
     }
 
 
     public void setInstanceId(final String instanceId) {
-        try { ;
-            setItem(INSTANCE_ID, instanceId);
-        } catch (DynamoDbException e) {
-            throw new InternalServerErrorException("Failed to setInstanceId");
-        }
+        setItem(INSTANCE_ID, instanceId);
     }
 
     public String getAmiID() {
-        try {
-            return getItem(AMI_ID).get(VALUE).toString();
-        } catch (DynamoDbException e) {
-            throw new InternalServerErrorException("Failed to getAmiId");
-        }
+        return getItem(AMI_ID).get(VALUE).toString();
     }
 
     public void setAmiId(final String amiId) {
-        try {
-            setItem(AMI_ID, amiId);
-        } catch (DynamoDbException e) {
-            throw new InternalServerErrorException("Failed to setAmiId");
-        }
+        setItem(AMI_ID, amiId);
     }
 
     private Map<String, AttributeValue> getItem(final String itemId) {
@@ -123,14 +89,16 @@ public class MinecraftDynamoWrapper {
         try {
             client.updateItem(request);
         } catch (ResourceNotFoundException e) {
-            System.err.println("failed on client.updateItem in setItem() (boolean)");
+            throw new InternalServerErrorException("failed on client.updateItem in setItem() (boolean)");
+        } catch (DynamoDbException e) {
+            throw new InternalServerErrorException("Failed to get "+ itemId +" from dynamo");
         }
     }
 
-    private void setItem(final String str, String val) {
+    private void setItem(final String itemId, String val) {
         HashMap<String, AttributeValue> itemKey = new HashMap<>();
         HashMap<String, AttributeValueUpdate> updatedValues = new HashMap<>();
-        itemKey.put(ITEM_ID, AttributeValue.builder().s(str).build());
+        itemKey.put(ITEM_ID, AttributeValue.builder().s(itemId).build());
         updatedValues.put(VALUE, AttributeValueUpdate.builder()
                 .value(AttributeValue.builder().s(val).build())
                 .action(AttributeAction.PUT)
@@ -143,7 +111,9 @@ public class MinecraftDynamoWrapper {
         try {
             client.updateItem(request);
         } catch (ResourceNotFoundException e) {
-            System.err.println("failed on client.updateItem in setItem() (string)");
+            throw new InternalServerErrorException("failed on client.updateItem in setItem() (string)");
+        } catch (DynamoDbException e) {
+            throw new InternalServerErrorException("Failed to get "+itemId +" from dynamo");
         }
     }
 }

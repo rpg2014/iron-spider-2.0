@@ -12,13 +12,21 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>2.7.8</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>org.glassfish.jersey</groupId>
                 <artifactId>jersey-bom</artifactId>
                 <version>${jersey.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-                    </dependencies>
+        </dependencies>
     </dependencyManagement>
 
     <dependencies>
@@ -105,14 +113,18 @@
         </dependency>
 
         <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.3.0-alpha4</version>
-    </dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.3.0-alpha4</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
             <version>2.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb</artifactId>
         </dependency>
     </dependencies>
 

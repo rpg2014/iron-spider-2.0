@@ -20,6 +20,7 @@ public class MinecraftDynamoWrapper {
     private static final String INSTANCE_ID = "instanceId";
     private static final String SERVER_RUNNING = "serverRunning";
     private static final String SNAPSHOT_ID = "snapshotId";
+    private static final String TABLE_NAME = "spencerIsDumb";
     private static final String VALUE = "value";
     private DynamoDbClient client;
 
@@ -69,7 +70,7 @@ public class MinecraftDynamoWrapper {
     private Map<String, AttributeValue> getItem(final String itemId) {
         HashMap<String, AttributeValue> map = new HashMap<>();
         map.put(ITEM_ID, AttributeValue.builder().s(itemId).build());
-        GetItemRequest request = GetItemRequest.builder().key(map).tableName("spencerIsDumb").build();
+        GetItemRequest request = GetItemRequest.builder().key(map).tableName(TABLE_NAME).build();
         return client.getItem(request).item();
     }
 
@@ -82,7 +83,7 @@ public class MinecraftDynamoWrapper {
                 .action(AttributeAction.PUT)
                 .build());
         UpdateItemRequest request = UpdateItemRequest.builder()
-                .tableName("spencerIsDumb")
+                .tableName(TABLE_NAME)
                 .key(itemKey)
                 .attributeUpdates(updatedValues)
                 .build();
@@ -104,7 +105,7 @@ public class MinecraftDynamoWrapper {
                 .action(AttributeAction.PUT)
                 .build());
         UpdateItemRequest request = UpdateItemRequest.builder()
-                .tableName("spencerIsDumb")
+                .tableName(TABLE_NAME)
                 .key(itemKey)
                 .attributeUpdates(updatedValues)
                 .build();

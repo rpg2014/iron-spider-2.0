@@ -3,6 +3,7 @@ package com.rpg2014;
 import com.rpg2014.model.ServerControllerInterface;
 import com.rpg2014.model.Status;
 import com.rpg2014.model.StatusResponse;
+import com.rpg2014.wrappers.MinecraftDynamoWrapper;
 
 import javax.annotation.Resource;
 import javax.ws.rs.*;
@@ -27,7 +28,8 @@ public class ServerController implements ServerControllerInterface {
     @Produces(MediaType.APPLICATION_JSON)
     public StatusResponse serverStatus() {
 //        Status status = EC2Wrapper.getServerStatus();
-        return StatusResponse.builder().status(Status.Terminated).build();
+
+        return StatusResponse.builder().status(MinecraftDynamoWrapper.getInstance().isServerRunning()).build();
     }
 
     @Override

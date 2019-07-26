@@ -61,7 +61,7 @@ public class SpidermanEC2Wrapper {
 
             boolean success = state.code() < 32;
             if (success) {
-                log.info("Started server",CLASS_NAME);
+                log.info("Started server");
                 serverDetails.setServerRunning();
             }
             return success;
@@ -96,9 +96,9 @@ public class SpidermanEC2Wrapper {
             serverDetails.setAmiId(amiId);
             serverDetails.setSnapshotId(getNewestSnapshot());
 
-            log.info("Server Stopped",CLASS_NAME);
+            log.info("Server Stopped");
             if (!serverDetails.getAmiID().equals(oldAMIid) && !serverDetails.getSnapshotId().equals(oldSnapshotId)) {
-                log.info("Deleting old snapshot_id "+ oldSnapshotId, CLASS_NAME);
+                log.info("Deleting old snapshot_id ");
                 deleteOldAmi(oldAMIid, oldSnapshotId);
             }
 
@@ -109,7 +109,7 @@ public class SpidermanEC2Wrapper {
             boolean success =
                     terminateInstancesResult.terminatingInstances().get(0).currentState().code() > 32;
             if (success)
-                log.info("Terminated Server", CLASS_NAME);
+                log.info("Terminated Server");
             serverDetails.setServerStopped();
             return success;
         } else {
@@ -138,7 +138,7 @@ public class SpidermanEC2Wrapper {
     }
 
     private void waitForServerStop(String instanceId) {
-        log.info("Waiting for instance "+ instanceId+ "to stop", CLASS_NAME);
+        log.info("Waiting for instance "+ instanceId+ "to stop");
         do{
             try {
                 Thread.sleep(5000);
@@ -159,7 +159,7 @@ public class SpidermanEC2Wrapper {
                 newestSnap = snapshot;
             }
         }
-        log.info("Newest Snapshot is " + newestSnap.snapshotId(), CLASS_NAME);
+        log.info("Newest Snapshot is " + newestSnap.snapshotId());
         return newestSnap.snapshotId();
     }
 
@@ -177,7 +177,7 @@ public class SpidermanEC2Wrapper {
                 .build();
         CreateImageResponse createImageResponse = ec2Client.createImage(createImageRequest);
         String amiId = createImageResponse.imageId();
-        log.info("Created AMI, image id: "+ amiId, CLASS_NAME);
+        log.info("Created AMI, image id: "+ amiId);
         return amiId;
     }
 
@@ -188,7 +188,7 @@ public class SpidermanEC2Wrapper {
             RebootInstancesResponse result = ec2Client.rebootInstances(request);
             log.info(result.toString(), this.getClass().getSimpleName());
         }else {
-            log.info("Server isn't up to be rebooted", CLASS_NAME);
+            log.info("Server isn't up to be rebooted");
         }
     }
 
@@ -215,9 +215,9 @@ public class SpidermanEC2Wrapper {
         }
         boolean isUp = response.reservations().get(0).instances().get(0).state().code() == 16;
         if(isUp){
-            log.info("Server instance "+ instanceId +" is up", CLASS_NAME);
+            log.info("Server instance "+ instanceId +" is up");
         }else {
-            log.info("Server instance "+ instanceId +" is down", CLASS_NAME);
+            log.info("Server instance "+ instanceId +" is down");
         }
         return isUp;
     }
@@ -230,7 +230,7 @@ public class SpidermanEC2Wrapper {
             return true;
         boolean isDown = response.reservations().get(0).instances().get(0).state().code() == 80;
         if(isDown)
-            log.info("Server Instance "+ serverDetails.getInstanceId() + "is down", CLASS_NAME);
+            log.info("Server Instance "+ serverDetails.getInstanceId() + "is down");
         return isDown;
     }
 }

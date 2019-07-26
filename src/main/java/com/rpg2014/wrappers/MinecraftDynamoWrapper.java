@@ -10,11 +10,6 @@ import java.util.Map;
 
 public class MinecraftDynamoWrapper {
     private static MinecraftDynamoWrapper ourInstance = new MinecraftDynamoWrapper();
-
-    public static MinecraftDynamoWrapper getInstance() {
-        return ourInstance;
-    }
-
     private static final String ITEM_ID = "itemId";
     private static final String AMI_ID = "amiId";
     private static final String INSTANCE_ID = "instanceId";
@@ -28,11 +23,11 @@ public class MinecraftDynamoWrapper {
         client = DynamoDbClient.builder().region(Region.US_EAST_1).build();
     }
 
-    public boolean isServerRunning() {
-
-            return getItem(SERVER_RUNNING).get(VALUE).bool();
-
+    public static MinecraftDynamoWrapper getInstance() {
+        return ourInstance;
     }
+
+    public boolean isServerRunning() { return getItem(SERVER_RUNNING).get(VALUE).bool(); }
 
     public void setServerRunning() {
         setItem(SERVER_RUNNING, true);
@@ -53,7 +48,6 @@ public class MinecraftDynamoWrapper {
     public String getInstanceId() {
         return getItem(INSTANCE_ID).get(VALUE).toString();
     }
-
 
     public void setInstanceId(final String instanceId) {
         setItem(INSTANCE_ID, instanceId);

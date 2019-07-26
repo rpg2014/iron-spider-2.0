@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 
 import javax.ws.rs.InternalServerErrorException;
@@ -40,6 +41,7 @@ public class AuthDynamoWrapper {
             createEntryForUser(userName);
             return false;
         }
+        log.info("User "+userName+", Has access: "+itemMap.get(VALUE_KEY).bool());
         return itemMap.get(VALUE_KEY).bool();
     }
 
@@ -58,10 +60,14 @@ public class AuthDynamoWrapper {
         }catch(DynamoDbException e) {
             log.error(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
+        }catch(Exception e){
+            e.printStackTrace();
         }
+        throw new InternalServerErrorException("Unable to get item");
     }
 
     private void createEntryForUser(final String username){
+        log.info("Creating dynamo entry for user: " +username);
         Map<String,AttributeValue> item = new HashMap<>();
         item.put(USER_NAME, AttributeValue.builder().s(username).build());
         item.put(VALUE_KEY, AttributeValue.builder().bool(Boolean.FALSE).build());
@@ -69,13 +75,16 @@ public class AuthDynamoWrapper {
         PutItemRequest request = PutItemRequest.builder().tableName(TABLE_NAME).item(item).build();
 
         try{
-            client.putItem(request);
+            PutItemResponse response = client.putItem(request);
+
         }catch(ResourceNotFoundException e){
             log.error(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
         }catch(DynamoDbException e) {
             log.error(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
+        }catch(Exception e){
+            e.printStackTrace();
         }
     }
 }

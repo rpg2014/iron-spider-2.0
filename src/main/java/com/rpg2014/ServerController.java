@@ -60,6 +60,7 @@ public class ServerController implements ServerControllerInterface {
 
     @Override
     @POST
+    @Path("/stop")
     @Produces(MediaType.APPLICATION_JSON)
     @RequiresLogin
     @RequiresAccess

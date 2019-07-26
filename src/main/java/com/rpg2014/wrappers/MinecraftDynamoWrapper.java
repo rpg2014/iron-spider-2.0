@@ -54,7 +54,6 @@ public class MinecraftDynamoWrapper {
         return getItem(INSTANCE_ID).get(VALUE).toString();
     }
 
-
     public void setInstanceId(final String instanceId) {
         setItem(INSTANCE_ID, instanceId);
     }

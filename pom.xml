@@ -175,9 +175,8 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.4.18-SNAPSHOT</version>
+                <version>9.4.19.v20190610</version>
                 <configuration>
-                    <contextPath>/</contextPath>
                     <webApp>
                         <contextPath>/</contextPath>
                         <webInfIncludeJarPattern>.*/.*jersey-[^/]\.jar$</webInfIncludeJarPattern>

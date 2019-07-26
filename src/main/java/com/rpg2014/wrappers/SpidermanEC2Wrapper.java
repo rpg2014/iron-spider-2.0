@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
 
+import javax.ws.rs.InternalServerErrorException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,7 +25,6 @@ public class SpidermanEC2Wrapper {
     private MinecraftDynamoWrapper serverDetails;
     private String oldAMIid;
     private String oldSnapshotId;
-    private static final String CLASS_NAME = SpidermanEC2Wrapper.class.getSimpleName();
 
     private SpidermanEC2Wrapper() {
         this.ec2Client = Ec2Client.create();
@@ -72,12 +72,12 @@ public class SpidermanEC2Wrapper {
     private String getInstanceId(RunInstancesResponse runInstancesResponse) {
         List<Instance> instanceList = runInstancesResponse.instances();
         List<String> idList = new ArrayList<>();
-        for (Instance instance : instanceList) {
+        for (Instance instance : instanceList)
             idList.add(instance.instanceId());
-        }
-        if (idList.size() == 1) {
+
+        if (idList.size() == 1)
             return idList.get(0);
-        } else
+        else
             return null;
     }
 
@@ -110,31 +110,32 @@ public class SpidermanEC2Wrapper {
                     terminateInstancesResult.terminatingInstances().get(0).currentState().code() > 32;
             if (success)
                 log.info("Terminated Server");
+
             serverDetails.setServerStopped();
             return success;
         } else {
             return false;
         }
-
     }
 
     private void waitForSnapshotToBeCreated() {
-        DescribeSnapshotsResponse result;
+        DescribeSnapshotsResponse response;
         List<Snapshot> finishedSnapshots = new ArrayList<>();
         do{
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                throw new InternalServerErrorException(e.getMessage());
             }
             DescribeSnapshotsRequest request = DescribeSnapshotsRequest.builder()
                     .ownerIds(AWS_ACCOUNT_ID.replaceAll("-","")).build();
-            result = ec2Client.describeSnapshots(request);
-            if (result.snapshots().size() > 1)
-                finishedSnapshots = result.snapshots().stream()
+            response = ec2Client.describeSnapshots(request);
+            if (response.snapshots().size() > 1)
+                finishedSnapshots = response.snapshots().stream()
                         .filter(snapshot -> snapshot.progress().contains("100"))
                         .collect(Collectors.toList());
-        }while(result.snapshots().size() == 1 && finishedSnapshots.size() != result.snapshots().size());
+        }while(finishedSnapshots.size() != response.snapshots().size() && response.snapshots().size() == 1);
     }
 
     private void waitForServerStop(String instanceId) {
@@ -155,9 +156,8 @@ public class SpidermanEC2Wrapper {
         Snapshot newestSnap= Snapshot.builder().startTime(new Date(Long.MIN_VALUE).toInstant()).build();
 
         for(Snapshot snapshot: response.snapshots()){
-            if(newestSnap.startTime().isBefore(snapshot.startTime())) {
+            if(newestSnap.startTime().isBefore(snapshot.startTime()))
                 newestSnap = snapshot;
-            }
         }
         log.info("Newest Snapshot is " + newestSnap.snapshotId());
         return newestSnap.snapshotId();
@@ -187,7 +187,7 @@ public class SpidermanEC2Wrapper {
                     .instanceIds(serverDetails.getInstanceId()).build();
             RebootInstancesResponse result = ec2Client.rebootInstances(request);
             log.info(result.toString(), this.getClass().getSimpleName());
-        }else {
+        } else {
             log.info("Server isn't up to be rebooted");
         }
     }
@@ -206,19 +206,17 @@ public class SpidermanEC2Wrapper {
         return response.reservations().get(0).instances().get(0).publicIpAddress();
     }
 
-    public boolean isInstanceUp() {
+    private boolean isInstanceUp() {
         String instanceId = serverDetails.getInstanceId();
         DescribeInstancesRequest request = DescribeInstancesRequest.builder().instanceIds(instanceId).build();
         DescribeInstancesResponse response = ec2Client.describeInstances(request);
-        if(response.reservations().size() == 0 || response.reservations().get(0).instances().size() ==0){
+        if(response.reservations().size() == 0 || response.reservations().get(0).instances().size() ==0)
             return false;
-        }
         boolean isUp = response.reservations().get(0).instances().get(0).state().code() == 16;
-        if(isUp){
+        if(isUp)
             log.info("Server instance "+ instanceId +" is up");
-        }else {
+        else
             log.info("Server instance "+ instanceId +" is down");
-        }
         return isUp;
     }
 

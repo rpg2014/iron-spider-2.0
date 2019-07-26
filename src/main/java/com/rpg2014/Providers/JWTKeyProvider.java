@@ -7,6 +7,10 @@ import com.auth0.jwk.JwkProviderBuilder;
 
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.ext.Provider;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -14,21 +18,26 @@ import java.security.interfaces.RSAPublicKey;
 @Provider
 public class JWTKeyProvider implements com.auth0.jwt.interfaces.RSAKeyProvider {
 
-    private static final String USER_POOL_ID = System.getenv("USER_POOL_ID");
+    private final String USER_POOL_ID = System.getenv("USER_POOL_ID");
+    private final String url = "https://cognito-idp.us-east-1.amazonaws.com/" + USER_POOL_ID + "/.well-known/jwks.json";
+    private final URL uri = new URL(url);
 
-    JwkProvider keyProvider = new JwkProviderBuilder("https://cognito-idp.us-east-1.amazonaws.com/"+ USER_POOL_ID +"/.well-known/jwks.json").cached(true).build();
+    JwkProvider keyProvider = new JwkProviderBuilder(uri).cached(true).build();
     final RSAPrivateKey privateKey = null;
     final String privateKeyId = "notUsed";
 
+    public JWTKeyProvider() throws MalformedURLException {
+    }
+
     @Override
-    public RSAPublicKey getPublicKeyById(String s) {
+    public RSAPublicKey getPublicKeyById(String keyId) {
         try {
-            if(keyProvider.get(s).getType() == "RSA" ){
-                RSAPublicKey key = (RSAPublicKey) keyProvider.get(s).getPublicKey();
-                return key;
+            Jwk key = keyProvider.get(keyId);
+            if(key.getType().equals("RSA")){
+                return (RSAPublicKey) key.getPublicKey();
             }
         } catch (JwkException e) {
-            throw new InternalServerErrorException("Unable to get jwt key");
+            throw new InternalServerErrorException(e.getMessage());
         }
         return null;
     }

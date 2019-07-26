@@ -1,5 +1,6 @@
 package com.rpg2014;
 
+import com.rpg2014.filters.RequiresAccess.RequiresAccess;
 import com.rpg2014.filters.RequiresLogin.RequiresLogin;
 import com.rpg2014.model.DetailsResponse;
 import com.rpg2014.model.ServerControllerInterface;
@@ -38,6 +39,7 @@ public class ServerController implements ServerControllerInterface {
     @Override
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresLogin
     @Path("/details")
     public DetailsResponse serverDetails() {
         return null;
@@ -47,8 +49,8 @@ public class ServerController implements ServerControllerInterface {
     @GET
     @Path("/start")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-
+    @RequiresLogin
+    @RequiresAccess
     public StartResponse serverStart() {
         new Thread(()-> {
             TestSuspended.start();
@@ -58,8 +60,10 @@ public class ServerController implements ServerControllerInterface {
 
     @Override
     @POST
+    @Path("/stop")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @RequiresLogin
+    @RequiresAccess
     public StopResponse serverStop() {
         return null;
     }

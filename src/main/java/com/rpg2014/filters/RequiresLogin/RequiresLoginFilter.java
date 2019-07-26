@@ -15,17 +15,21 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.List;
 
 @Priority(Priorities.AUTHENTICATION)
 public class RequiresLoginFilter implements ContainerRequestFilter {
 
-    private static final String USER_POOL = System.getenv("USER_POOL_ID");
-    private static final String COGNITO_APP_ID = System.getenv("COGNITO_APP_ID");
+    private static final String USER_POOL_ID = System.getenv("USER_POOL_ID");
     private static final String AUTH_HEADER_NAME = "spider-access-token";
     private static final String USERNAME_HEADER_NAME = "spider-username";
 
     Algorithm algorithm = Algorithm.RSA256(new JWTKeyProvider());
-    JWTVerifier verifier = JWT.require(algorithm).withIssuer(USER_POOL).withAudience(COGNITO_APP_ID).withClaim("token_use", "access").acceptLeeway(1).build();
+    JWTVerifier verifier = JWT.require(algorithm).withIssuer(USER_POOL_ID).withClaim("token_use", "access").acceptLeeway(1).build();
+
+    public RequiresLoginFilter() throws MalformedURLException {
+    }
 
     @Override public void filter(ContainerRequestContext containerRequestContext) throws IOException {
         String authToken = containerRequestContext.getHeaderString(AUTH_HEADER_NAME);

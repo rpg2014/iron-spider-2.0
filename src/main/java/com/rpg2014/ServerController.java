@@ -53,7 +53,6 @@ public class ServerController implements ServerControllerInterface {
         new Thread(()-> {
             TestSuspended.start();
         }).start();
-
         return StartResponse.builder().serverStarted(true).build();
     }
 

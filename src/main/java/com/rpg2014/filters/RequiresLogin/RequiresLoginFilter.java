@@ -34,14 +34,13 @@ public class RequiresLoginFilter implements ContainerRequestFilter {
         }
         String username = "";
         try {
-            username =  verifyToken(authToken);
+            username = verifyToken(authToken);
         }catch (Exception e){
             e.printStackTrace();
             throw new NotAuthorizedException("Unable to verify access token");
         }
         containerRequestContext.getHeaders().add(USERNAME_HEADER_NAME, username);
     }
-
 
     private String verifyToken(final String authToken){
         DecodedJWT key = verifier.verify(authToken);

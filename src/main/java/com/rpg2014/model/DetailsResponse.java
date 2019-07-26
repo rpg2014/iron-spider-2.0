@@ -4,6 +4,5 @@ import lombok.Builder;
 
 @Builder
 public class DetailsResponse {
-
     String domainName;
 }

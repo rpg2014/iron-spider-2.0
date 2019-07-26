@@ -14,7 +14,7 @@ public class RequiresAccessFeature implements DynamicFeature {
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext featureContext) {
         RequiresAccess requiresAccess = resourceInfo.getResourceMethod().getAnnotation(RequiresAccess.class);
-        if(requiresAccess ==null){
+        if(requiresAccess == null){
             return;
         }
         RequiresAuthFilter filter = new RequiresAuthFilter();

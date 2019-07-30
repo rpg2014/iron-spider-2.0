@@ -11,13 +11,8 @@ public class EC2Invoker {
             Method method = null;
             try {
                 method = instance.getClass().getDeclaredMethod(methodName);
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-
-            try {
                 method.invoke(instance);
-            } catch (IllegalAccessException | InvocationTargetException | AssertionError e) {
+            } catch (IllegalAccessException | InvocationTargetException | AssertionError | NoSuchMethodException e) {
                 e.printStackTrace();
             }
         };

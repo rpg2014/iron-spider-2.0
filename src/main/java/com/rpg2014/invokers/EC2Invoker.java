@@ -7,6 +7,9 @@ import java.lang.reflect.Method;
 
 public class EC2Invoker {
 
+    /**
+     * Overloaded contructors that take an EC2Wrapper instance obj, a method name and arguments
+     */
     public void EC2Invoker (Object obj, String methodName) throws InterruptedException {
         Thread t = new Thread(setRunner(obj, methodName));
         t.start();
@@ -31,8 +34,11 @@ public class EC2Invoker {
         t.join();
     }
 
+    /**
+     * Overloaded Setters for the threads runnable
+     */
     private Runnable setRunner (Object obj, String methodName) {
-        Runnable r = () -> {
+        return () -> {
             Method method = null;
             try {
                 method = obj.getClass().getDeclaredMethod(methodName);
@@ -44,11 +50,10 @@ public class EC2Invoker {
                 method.invoke(obj);
             } catch (IllegalAccessException | InvocationTargetException e) { e.printStackTrace(); }
         };
-        return r;
     }
 
     private Runnable setRunner (Object obj, String methodName, RunInstancesResponse runInstancesResponse) {
-        Runnable r = () -> {
+        return () -> {
             Method method = null;
             try {
                 method = obj.getClass().getDeclaredMethod(methodName);
@@ -60,11 +65,10 @@ public class EC2Invoker {
                 method.invoke(obj, runInstancesResponse);
             } catch (IllegalAccessException | InvocationTargetException e) { e.printStackTrace(); }
         };
-        return r;
     }
 
     private Runnable setRunner (Object obj, String methodName, String instanceId) {
-        Runnable r = () -> {
+        return () -> {
             Method method = null;
             try {
                 method = obj.getClass().getDeclaredMethod(methodName);
@@ -76,11 +80,10 @@ public class EC2Invoker {
                 method.invoke(obj, instanceId);
             } catch (IllegalAccessException | InvocationTargetException e) { e.printStackTrace(); }
         };
-        return r;
     }
 
     private Runnable setRunner (Object obj, String methodName, String oldAMIid, final String oldSnapshotId) {
-        Runnable r = () -> {
+        return () -> {
             Method method = null;
             try {
                 method = obj.getClass().getDeclaredMethod(methodName);
@@ -92,6 +95,5 @@ public class EC2Invoker {
                 method.invoke(obj, oldAMIid, oldSnapshotId);
             } catch (IllegalAccessException | InvocationTargetException e) { e.printStackTrace(); }
         };
-        return r;
     }
 }

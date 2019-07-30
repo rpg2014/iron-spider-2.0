@@ -23,6 +23,5 @@ public class EC2Invoker {
         };
         Thread t = new Thread(r);
         t.start();
-        t.join();
     }
 }

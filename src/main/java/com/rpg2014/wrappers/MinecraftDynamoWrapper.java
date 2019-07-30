@@ -15,7 +15,7 @@ public class MinecraftDynamoWrapper {
     private static final String INSTANCE_ID = "instanceId";
     private static final String SERVER_RUNNING = "serverRunning";
     private static final String SNAPSHOT_ID = "snapshotId";
-    private static final String TABLE_NAME = "spencerIsDumb";
+    private static final String TABLE_NAME = "minecraftServerDetails";
     private static final String VALUE = "value";
     private DynamoDbClient client;
 

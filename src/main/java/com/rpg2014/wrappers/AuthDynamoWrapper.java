@@ -43,7 +43,7 @@ public class AuthDynamoWrapper {
         log.info("User " + userName + ", Has access: " + itemMap.get(VALUE_KEY).bool());
         return itemMap.get(VALUE_KEY).bool();
     }
-    
+
     private Map<String, AttributeValue> getItem(final String username) {
         HashMap<String, AttributeValue> map = new HashMap<>();
         map.put(USER_NAME, AttributeValue.builder().s(username).build());

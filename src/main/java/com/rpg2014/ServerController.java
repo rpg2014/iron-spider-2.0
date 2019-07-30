@@ -2,7 +2,9 @@ package com.rpg2014;
 
 import com.rpg2014.filters.RequiresAccess.RequiresAccess;
 import com.rpg2014.filters.RequiresLogin.RequiresLogin;
+import com.rpg2014.invokers.EC2Invoker;
 import com.rpg2014.model.DetailsResponse;
+import com.rpg2014.model.Ec2MethodNames;
 import com.rpg2014.model.ServerControllerInterface;
 import com.rpg2014.model.Status;
 import com.rpg2014.model.StatusResponse;
@@ -10,7 +12,10 @@ import com.rpg2014.model.StatusResponse;
 import com.rpg2014.model.start.StartResponse;
 import com.rpg2014.model.stop.StopResponse;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -19,7 +24,7 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/server")
 public class ServerController implements ServerControllerInterface {
-
+    EC2Invoker ec2Invoker = new EC2Invoker();
     /**
      * Method handling HTTP GET requests. The returned object will be sent
      * to the client as "json" media type.
@@ -32,8 +37,8 @@ public class ServerController implements ServerControllerInterface {
     @Produces(MediaType.APPLICATION_JSON)
     @RequiresLogin
     public StatusResponse serverStatus() {
-//        Status status = EC2Wrapper.getServerStatus();
-        return StatusResponse.builder().status(Status.Terminated).build();
+        Status status = (Status) ec2Invoker.invoke(Ec2MethodNames.Status).get();
+        return StatusResponse.builder().status(status).build();
     }
 
     @Override
@@ -42,7 +47,8 @@ public class ServerController implements ServerControllerInterface {
     @RequiresLogin
     @Path("/details")
     public DetailsResponse serverDetails() {
-        return null;
+        String domainName = (String) ec2Invoker.invoke(Ec2MethodNames.DomainName).get();
+        return DetailsResponse.builder().domainName(domainName).build();
     }
 
     @Override
@@ -52,9 +58,7 @@ public class ServerController implements ServerControllerInterface {
     @RequiresLogin
     @RequiresAccess
     public StartResponse serverStart() {
-        new Thread(()-> {
-            TestSuspended.start();
-        }).start();
+        ec2Invoker.invoke(Ec2MethodNames.StartInstance);
         return StartResponse.builder().serverStarted(true).build();
     }
 
@@ -65,7 +69,8 @@ public class ServerController implements ServerControllerInterface {
     @RequiresLogin
     @RequiresAccess
     public StopResponse serverStop() {
-        return null;
+        ec2Invoker.invoke(Ec2MethodNames.StartInstance);
+        return StopResponse.builder().serverStopping(true).build();
     }
 
 

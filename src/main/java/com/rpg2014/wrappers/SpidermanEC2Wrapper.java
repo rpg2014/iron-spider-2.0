@@ -2,9 +2,32 @@ package com.rpg2014.wrappers;
 
 import com.rpg2014.model.Status;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.ec2.model.*;
+import software.amazon.awssdk.services.ec2.Ec2ClientBuilder;
+import software.amazon.awssdk.services.ec2.model.CreateImageRequest;
+import software.amazon.awssdk.services.ec2.model.CreateImageResponse;
+import software.amazon.awssdk.services.ec2.model.DeleteSnapshotRequest;
+import software.amazon.awssdk.services.ec2.model.DeregisterImageRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
+import software.amazon.awssdk.services.ec2.model.DescribeSnapshotsRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeSnapshotsResponse;
+import software.amazon.awssdk.services.ec2.model.Ec2Exception;
+import software.amazon.awssdk.services.ec2.model.Instance;
+import software.amazon.awssdk.services.ec2.model.InstanceState;
+import software.amazon.awssdk.services.ec2.model.RebootInstancesRequest;
+import software.amazon.awssdk.services.ec2.model.RebootInstancesResponse;
+import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
+import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
+import software.amazon.awssdk.services.ec2.model.Snapshot;
+import software.amazon.awssdk.services.ec2.model.StartInstancesRequest;
+import software.amazon.awssdk.services.ec2.model.StartInstancesResponse;
+import software.amazon.awssdk.services.ec2.model.StopInstancesRequest;
+import software.amazon.awssdk.services.ec2.model.TerminateInstancesRequest;
+import software.amazon.awssdk.services.ec2.model.TerminateInstancesResponse;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,7 +51,7 @@ public class SpidermanEC2Wrapper {
     private String oldSnapshotId;
 
     private SpidermanEC2Wrapper() {
-        this.ec2Client = Ec2Client.create();
+        this.ec2Client = Ec2Client.builder().region(Region.US_EAST_1).build();
         serverDetails = MinecraftDynamoWrapper.getInstance();
         oldAMIid = serverDetails.getAmiID();
         oldSnapshotId = serverDetails.getSnapshotId();
@@ -196,8 +219,16 @@ public class SpidermanEC2Wrapper {
     public String getInstanceDomainName() {
         String instanceId = serverDetails.getInstanceId();
         DescribeInstancesRequest request = DescribeInstancesRequest.builder().instanceIds(instanceId).build();
-        DescribeInstancesResponse response = ec2Client.describeInstances(request);
-        return response.reservations().get(0).instances().get(0).publicDnsName();
+        try {
+            DescribeInstancesResponse response = ec2Client.describeInstances(request);
+            return response.reservations().get(0).instances().get(0).publicDnsName();
+        }catch (Ec2Exception e){
+            if(e.getMessage().contains("Invalid id")){
+                throw new BadRequestException("Server is not running");
+            }
+            throw new InternalServerErrorException(e.getMessage());
+        }
+
     }
 
     public String getInstanceIp() {
@@ -233,11 +264,18 @@ public class SpidermanEC2Wrapper {
         return isDown;
     }
 
-    public Status getStatus(){
+    public Status getInstanceStatus(){
         DescribeInstancesRequest request = DescribeInstancesRequest.builder()
                 .instanceIds(serverDetails.getInstanceId()).build();
-        DescribeInstancesResponse response = ec2Client.describeInstances(request);
-        Status status = Status.of(response.reservations().get(0).instances().get(0).state().code());
-        return status;
+        try {
+            DescribeInstancesResponse response = ec2Client.describeInstances(request);
+            Status status = Status.of(response.reservations().get(0).instances().get(0).state().code());
+            return status;
+        }catch (Ec2Exception e){
+            if(e.getMessage().contains("Invalid id")){
+                return Status.Terminated;
+            }
+        }
+        throw new InternalServerErrorException("Unable to Fetch server status");
     }
 }

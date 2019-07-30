@@ -1,5 +1,6 @@
 package com.rpg2014.wrappers;
 
+import com.rpg2014.model.Status;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
@@ -230,5 +231,13 @@ public class SpidermanEC2Wrapper {
         if(isDown)
             log.info("Server Instance "+ serverDetails.getInstanceId() + "is down");
         return isDown;
+    }
+
+    public Status getStatus(){
+        DescribeInstancesRequest request = DescribeInstancesRequest.builder()
+                .instanceIds(serverDetails.getInstanceId()).build();
+        DescribeInstancesResponse response = ec2Client.describeInstances(request);
+        Status status = Status.of(response.reservations().get(0).instances().get(0).state().code());
+        return status;
     }
 }

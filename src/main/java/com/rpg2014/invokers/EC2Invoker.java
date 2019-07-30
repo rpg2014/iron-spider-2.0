@@ -6,7 +6,9 @@ import java.lang.reflect.Method;
 
 public class EC2Invoker {
 
-    public void EC2Invoker (SpidermanEC2Wrapper instance, String methodName) throws InterruptedException {
+    private static SpidermanEC2Wrapper instance = SpidermanEC2Wrapper.getInstance();
+
+    public static void invoker(String methodName) throws InterruptedException {
         Runnable r = () -> {
             Method method = null;
             try {

@@ -19,8 +19,7 @@ import java.security.interfaces.RSAPublicKey;
 public class JWTKeyProvider implements com.auth0.jwt.interfaces.RSAKeyProvider {
 
     private final String USER_POOL_ID = System.getenv("USER_POOL_ID");
-    private final String url = "https://cognito-idp.us-east-1.amazonaws.com/" + USER_POOL_ID + "/.well-known/jwks.json";
-    private final URL uri = new URL(url);
+    private final URL uri = new URL( "https://cognito-idp.us-east-1.amazonaws.com/" + USER_POOL_ID + "/.well-known/jwks.json");
 
     JwkProvider keyProvider = new JwkProviderBuilder(uri).cached(true).build();
     final RSAPrivateKey privateKey = null;
@@ -37,6 +36,7 @@ public class JWTKeyProvider implements com.auth0.jwt.interfaces.RSAKeyProvider {
                 return (RSAPublicKey) key.getPublicKey();
             }
         } catch (JwkException e) {
+            e.printStackTrace();
             throw new InternalServerErrorException(e.getMessage());
         }
         return null;

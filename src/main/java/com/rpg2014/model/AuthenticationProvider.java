@@ -6,30 +6,31 @@ import com.rpg2014.wrappers.AuthDynamoWrapper;
 import java.util.concurrent.TimeUnit;
 
 public class AuthenticationProvider {
-    Cache<String, Boolean> trueCache = CacheBuilder.newBuilder().maximumSize(200).build();
-    Cache<String, Boolean> falseCache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
+    Cache<String, AuthorizationDetails> trueCache = CacheBuilder.newBuilder().maximumSize(200).build();
+    Cache<String, AuthorizationDetails> falseCache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
 
     AuthDynamoWrapper dynamoWrapper = AuthDynamoWrapper.getInstance();
 
     public boolean hasAccess(final String username){
-        Boolean hasAccess = trueCache.getIfPresent(username);
-        if (null != hasAccess) {
-            return hasAccess.booleanValue();
+        AuthorizationDetails authDetails = trueCache.getIfPresent(username);
+        if (null != authDetails) {
+            dynamoWrapper.startedServer(authDetails);
+            return authDetails.isAllowedToStartServer();
         }
-        hasAccess = falseCache.getIfPresent(username);
-        if(null != hasAccess){
-            return hasAccess.booleanValue();
+        authDetails = falseCache.getIfPresent(username);
+        if(null != authDetails){
+            return authDetails.isAllowedToStartServer();
         }
-        hasAccess = dynamoWrapper.isAuthorized(username);
-        put(username, hasAccess);
-        return hasAccess.booleanValue();
+        authDetails = dynamoWrapper.isAuthorized(username);
+        put(username, authDetails);
+        return authDetails.isAllowedToStartServer();
     }
 
-    private void put(final String username, final Boolean hasAccess){
-        if(hasAccess){
-            trueCache.put(username, hasAccess);
+    private void put(final String username, final AuthorizationDetails authDetails){
+        if(authDetails.isAllowedToStartServer()){
+            trueCache.put(username, authDetails);
         }else {
-            falseCache.put(username,hasAccess);
+            falseCache.put(username,authDetails);
         }
     }
 }

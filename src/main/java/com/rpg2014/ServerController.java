@@ -2,7 +2,6 @@ package com.rpg2014;
 
 import com.rpg2014.filters.RequiresAccess.RequiresAccess;
 import com.rpg2014.filters.RequiresLogin.RequiresLogin;
-import com.rpg2014.invokers.EC2Invoker;
 import com.rpg2014.model.DetailsResponse;
 import com.rpg2014.model.Ec2MethodNames;
 import com.rpg2014.model.ServerControllerInterface;
@@ -52,7 +51,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     @Override
-    @GET
+    @POST
     @Path("/start")
     @Produces(MediaType.APPLICATION_JSON)
     @RequiresLogin
@@ -69,7 +68,7 @@ public class ServerController implements ServerControllerInterface {
     @RequiresLogin
     @RequiresAccess
     public StopResponse serverStop() {
-        ec2Invoker.invoke(Ec2MethodNames.StartInstance);
+        ec2Invoker.invoke(Ec2MethodNames.StopInstance);
         return StopResponse.builder().serverStopping(true).build();
     }
 

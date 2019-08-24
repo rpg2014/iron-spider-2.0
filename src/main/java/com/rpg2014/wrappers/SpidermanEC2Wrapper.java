@@ -108,7 +108,11 @@ public class SpidermanEC2Wrapper {
     public boolean stopInstance() {
         if (serverDetails.isServerRunning() || isInstanceUp()) {
             String instanceId = serverDetails.getInstanceId();
-
+            String currentAMIId = serverDetails.getAmiID();
+            String currentSnapshot = serverDetails.getSnapshotId();
+            if(!oldAMIid.equals(currentAMIId)){
+                log.error("OLD AMI IS OUT OF DATE, oldami: {} , dynamoAMI: {}",oldAMIid, currentAMIId);
+            }
             StopInstancesRequest request = StopInstancesRequest.builder().instanceIds(instanceId).build();
             ec2Client.stopInstances(request);
 
@@ -121,9 +125,9 @@ public class SpidermanEC2Wrapper {
             serverDetails.setSnapshotId(getNewestSnapshot());
 
             log.info("Server Stopped");
-            if (!serverDetails.getAmiID().equals(oldAMIid) && !serverDetails.getSnapshotId().equals(oldSnapshotId)) {
+            if (!serverDetails.getAmiID().equals(currentAMIId) && !serverDetails.getSnapshotId().equals(currentSnapshot)) {
                 log.info("Deleting old snapshot_id ");
-                deleteOldAmi(oldAMIid, oldSnapshotId);
+                deleteOldAmi(currentAMIId, currentSnapshot);
             }
 
             TerminateInstancesRequest terminateInstancesRequest =
@@ -269,7 +273,12 @@ public class SpidermanEC2Wrapper {
                 .instanceIds(serverDetails.getInstanceId()).build();
         try {
             DescribeInstancesResponse response = ec2Client.describeInstances(request);
-            Status status = Status.of(response.reservations().get(0).instances().get(0).state().code());
+            Status status;
+            if(response.reservations().size() == 0){
+                status = Status.Terminated;
+            }else {
+                status = Status.of(response.reservations().get(0).instances().get(0).state().code());
+            }
             return status;
         }catch (Ec2Exception e){
             if(e.getMessage().contains("Invalid id")){

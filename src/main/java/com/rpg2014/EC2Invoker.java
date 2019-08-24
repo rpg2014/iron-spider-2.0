@@ -1,4 +1,4 @@
-package com.rpg2014.invokers;
+package com.rpg2014;
 
 import com.rpg2014.model.Ec2MethodNames;
 import com.rpg2014.wrappers.SpidermanEC2Wrapper;
@@ -32,9 +32,10 @@ public class EC2Invoker {
         return () -> {
             Method method = null;
             try {
-                method = instance.getClass().getDeclaredMethod(methodName.toString());
+                method = instance.getClass().getDeclaredMethod(methodName.getMethodName());
                 method.invoke(instance);
             } catch (IllegalAccessException | InvocationTargetException | AssertionError | NoSuchMethodException e) {
+                e.printStackTrace();
                 throw new InternalServerErrorException(e.getMessage());
             }
         };

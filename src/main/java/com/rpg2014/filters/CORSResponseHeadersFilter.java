@@ -15,7 +15,7 @@ public class CORSResponseHeadersFilter implements ContainerResponseFilter {
 
     @Override
     public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
-        containerResponseContext.getHeaders().add("Access-Control-Allow-Origin","http://localhost:3000");
+        containerResponseContext.getHeaders().add("Access-Control-Allow-Origin","https://d10bpp6au03ynd.cloudfront.net");
         containerResponseContext.getHeaders().add("Access-Control-Allow-Headers","spider-access-token");
     }
 }

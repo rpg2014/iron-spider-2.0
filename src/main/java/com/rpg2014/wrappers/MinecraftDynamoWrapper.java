@@ -38,7 +38,7 @@ public class MinecraftDynamoWrapper {
     }
 
     public String getSnapshotId() {
-        return getItem(SNAPSHOT_ID).get(VALUE).toString();
+        return getItem(SNAPSHOT_ID).get(VALUE).s();
     }
 
     public void setSnapshotId(final String snapshotId) {
@@ -46,7 +46,7 @@ public class MinecraftDynamoWrapper {
     }
 
     public String getInstanceId() {
-        return getItem(INSTANCE_ID).get(VALUE).toString();
+        return getItem(INSTANCE_ID).get(VALUE).s();
     }
 
     public void setInstanceId(final String instanceId) {
@@ -54,7 +54,7 @@ public class MinecraftDynamoWrapper {
     }
 
     public String getAmiID() {
-        return getItem(AMI_ID).get(VALUE).toString();
+        return getItem(AMI_ID).get(VALUE).s();
     }
 
     public void setAmiId(final String amiId) {

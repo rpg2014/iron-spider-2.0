@@ -147,8 +147,9 @@
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>http-client-spi</artifactId>
+            <artifactId>url-connection-client</artifactId>
         </dependency>
+
 
     </dependencies>
 

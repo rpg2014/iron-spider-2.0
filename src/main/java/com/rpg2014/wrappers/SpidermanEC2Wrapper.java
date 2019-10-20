@@ -284,8 +284,8 @@ public class SpidermanEC2Wrapper {
             if(e.getMessage().contains("Invalid id")){
                 return Status.Terminated;
             }
+            e.printStackTrace();
         }
-        e.printStackTrace();
         throw new InternalServerErrorException("Unable to Fetch server status");
     }
 }

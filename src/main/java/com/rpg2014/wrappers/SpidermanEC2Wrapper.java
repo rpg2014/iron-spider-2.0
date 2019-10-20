@@ -285,6 +285,7 @@ public class SpidermanEC2Wrapper {
                 return Status.Terminated;
             }
         }
+        e.printStackTrace();
         throw new InternalServerErrorException("Unable to Fetch server status");
     }
 }

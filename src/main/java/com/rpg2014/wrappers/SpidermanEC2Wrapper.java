@@ -281,7 +281,7 @@ public class SpidermanEC2Wrapper {
             }
             return status;
         }catch (Ec2Exception e){
-            if(e.getMessage().contains("Invalid id")){
+            if(e.getMessage().contains("Invalid id") || e.getMessage().contains("does not exist")){
                 return Status.Terminated;
             }
             e.printStackTrace();

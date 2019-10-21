@@ -23,6 +23,7 @@ public class AuthenticationProvider {
         }
         authDetails = dynamoWrapper.isAuthorized(username);
         put(username, authDetails);
+        dynamoWrapper.startedServer(authDetails);
         return authDetails.isAllowedToStartServer();
     }
 

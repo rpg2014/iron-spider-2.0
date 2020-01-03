@@ -21,7 +21,7 @@ import static com.rpg2014.filters.RequiresLogin.RequiresLoginFilter.USERNAME_HEA
 @Slf4j
 public class JournalController implements JournalControllerInterface {
     List<JournalEntry> list = new ArrayList<>();
-    JournalController() {
+    public JournalController() {
         for (int i = 0; i < 10; i++) {
             String title = "Title";
             if(i == 3){

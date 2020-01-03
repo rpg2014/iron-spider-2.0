@@ -35,7 +35,7 @@ public class JournalController implements JournalControllerInterface {
                         "\n" +
                         "Prepared is me marianne pleasure likewise debating. Wonder an unable except better stairs do ye admire. His and eat secure sex called esteem praise. So moreover as speedily differed branched ignorant. Tall are her knew poor now does then. Procured to contempt oh he raptures amounted occasion. One boy assure income spirit lovers set. ";
             }
-            JournalEntry entry = JournalEntry.builder().id(UUID.randomUUID()).toString())
+            JournalEntry entry = JournalEntry.builder().id(UUID.randomUUID().toString())
                     .title(title)
                     .text(text)
                     .isMarkdown(false)

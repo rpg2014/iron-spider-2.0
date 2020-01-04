@@ -26,10 +26,14 @@ public class JournalEntry {
     LocalDateTime dateTime;
 
     public static JournalEntry of(CreateEntryRequest request) {
+        LocalDateTime date = LocalDateTime.now();
+        if(request.getDateTime()!=null){
+            date = request.getDateTime();
+        }
         return JournalEntry.builder().title(request.getTitle())
                 .text(request.getText())
                 .isMarkdown(request.isMarkdown())
-                .dateTime(LocalDateTime.now())
+                .dateTime(date)
                 .id(UUID.randomUUID().toString()).build();
     }
 }

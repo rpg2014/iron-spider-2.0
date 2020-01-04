@@ -11,7 +11,6 @@ public class Journal {
     List<JournalEntry> entryList;
 
     public Journal(){
-        Journal j = new Journal();
         this.entryList = new ArrayList<JournalEntry>();
 
         for (int i = 0; i < 10; i++) {

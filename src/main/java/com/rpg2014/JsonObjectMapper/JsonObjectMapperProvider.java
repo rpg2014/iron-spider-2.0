@@ -25,6 +25,7 @@ public class JsonObjectMapperProvider extends JacksonJaxbJsonProvider {
        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
        mapper.enable(SerializationFeature.INDENT_OUTPUT);
        mapper.registerModule(new JavaTimeModule());
+       mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,false);
    }
 
     public JsonObjectMapperProvider() {

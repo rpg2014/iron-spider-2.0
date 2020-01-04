@@ -12,7 +12,7 @@ public class CreateEntryRequest {
     @NonNull
     String text;
     String title;
-    @NonNull LocalDateTime dateTime;
+    LocalDateTime dateTime;
     boolean isMarkdown;
 
     @JsonCreator

@@ -29,7 +29,7 @@ public class JournalEntry {
         return JournalEntry.builder().title(request.getTitle())
                 .text(request.getText())
                 .isMarkdown(request.isMarkdown())
-                .dateTime(request.getDateTime())
+                .dateTime(LocalDateTime.now())
                 .id(UUID.randomUUID().toString()).build();
     }
 }

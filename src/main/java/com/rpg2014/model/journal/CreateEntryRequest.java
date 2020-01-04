@@ -18,7 +18,7 @@ public class CreateEntryRequest {
     @JsonCreator
     public CreateEntryRequest(@NonNull @JsonProperty("text") String text,
                               @JsonProperty("title") String title,
-                              @NonNull @JsonProperty("dateTime") LocalDateTime dateTime,
+                              @JsonProperty("dateTime") LocalDateTime dateTime,
                               @JsonProperty("isMarkdown") boolean isMarkdown) {
         this.text = text;
         this.title = title;

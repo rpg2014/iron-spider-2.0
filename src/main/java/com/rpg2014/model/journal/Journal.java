@@ -3,13 +3,10 @@ package com.rpg2014.model.journal;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class Journal {
-    static Map<String,Journal> journalMap;
+    static Map<String,Journal> journalMap = new HashMap<>();
     @Getter
     List<JournalEntry> entryList;
 

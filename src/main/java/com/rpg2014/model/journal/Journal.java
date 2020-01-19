@@ -38,7 +38,6 @@ public class Journal {
             log.info("Journal entry not found, creating new one for user, {}", username);
             return Journal.builder().username(username).entryList(new ArrayList<>()).build();
         }
-        log.info(journalMap.toString());
         return Journal.from(journalMap);
     }
 

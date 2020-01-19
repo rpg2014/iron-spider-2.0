@@ -1,5 +1,7 @@
 package com.rpg2014.model.journal;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -34,6 +36,22 @@ public class JournalEntry {
 
     @NonNull
     LocalDateTime dateTime;
+
+    @JsonCreator
+    public JournalEntry(@NonNull @JsonProperty("id") String id,
+                        @NonNull @JsonProperty("text") String text,
+                        @JsonProperty("isMarkdown") boolean isMarkdown,
+                        @JsonProperty("title") String title,
+                        @NonNull @JsonProperty("dateTime") LocalDateTime dateTime) {
+        this.id = id;
+        this.text = text;
+        this.isMarkdown = isMarkdown;
+        this.title = title;
+        this.dateTime = dateTime;
+    }
+
+
+
 
     public static JournalEntry from(CreateEntryRequest request) {
         LocalDateTime date = LocalDateTime.now();

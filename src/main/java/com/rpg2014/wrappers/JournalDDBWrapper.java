@@ -50,7 +50,7 @@ public class JournalDDBWrapper {
 
         try {
             GetItemResponse response = client.getItem(request);
-            if(response.item() != null) {
+            if(response.item() != null && response.item().get(USERNAME_FIELD) != null) {
                 return response.item();
             }else
                 return null;

@@ -34,6 +34,7 @@ public class Journal {
 
     static public Journal getJournalForUser(final String username) {
         var journalMap = journalWrapper.getJournalForUser(username);
+        log.info(journalMap.toString());
         if (journalMap == null) {
             log.info("Journal entry not found, creating new one for user, {}", username);
             return Journal.builder().username(username).entryList(new ArrayList<>()).build();

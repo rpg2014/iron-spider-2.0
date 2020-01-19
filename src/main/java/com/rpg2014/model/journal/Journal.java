@@ -3,7 +3,6 @@ package com.rpg2014.model.journal;
 import com.rpg2014.model.EncryptionResult;
 import com.rpg2014.wrappers.EncryptionWrapper;
 import com.rpg2014.wrappers.JournalDDBWrapper;
-import com.rpg2014.wrappers.JournalKeyDDBWrapper;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -13,18 +12,20 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 
 @Builder
 @Slf4j
 public class Journal {
-    static JournalDDBWrapper journalWrapper = JournalDDBWrapper.getInstance();
-
     private static final String USERNAME_FIELD = "username";
     private static final String ENTRIES_FIELD = "entries";
     private static final String KEY_FIELD = "key";
-
+    static JournalDDBWrapper journalWrapper = JournalDDBWrapper.getInstance();
     @Getter
     List<JournalEntry> entryList;
 
@@ -33,16 +34,17 @@ public class Journal {
 
     static public Journal getJournalForUser(final String username) {
         var journalMap = journalWrapper.getJournalForUser(username);
-        if(journalMap == null){
+        if (journalMap == null) {
             log.info("Journal entry not found, creating new one for user, {}", username);
             return Journal.builder().username(username).entryList(new ArrayList<>()).build();
         }
-        return  Journal.from(journalMap);
+        return Journal.from(journalMap);
     }
 
 
     /**
-     * do decvryption here 
+     * do decvryption here
+     *
      * @param journalMap
      * @return
      */
@@ -55,38 +57,20 @@ public class Journal {
         return Journal.builder().username(username).entryList(journalEntryList).build();
     }
 
-    public boolean saveJournal() {
-        return journalWrapper.updateJournalForUser(this);
-    }
-
-    /**
-     * Do Encryption in here.  encrypt both username and the list
-     * @return
-     */
-    public Map<String, AttributeValue> toAttributeValueMap() {
-        Map<String, AttributeValue> map = new HashMap<>();
-        EncryptionResult result = EncryptionWrapper.getOurInstance().encryptJournalEntries(this.getEntryList(), getUsername());
-        map.put(USERNAME_FIELD, AttributeValue.builder().s(this.getUsername()).build()    );
-        map.put(ENTRIES_FIELD, AttributeValue.builder().b(SdkBytes.fromByteArray(result.getEncryptedBytes())).build());
-        map.put(KEY_FIELD, AttributeValue.builder().s(result.getEncryptedKey()).build());
-
-        return map;
-    }
-
     /**
      * Temp for testing
      */
-    public static Journal createTestJournal(){
+    public static Journal createTestJournal() {
 
         List<JournalEntry> entryList = new ArrayList<JournalEntry>();
 
         for (int i = 0; i < 10; i++) {
             String title = "Title";
-            if(i == 3){
+            if (i == 3) {
                 title = null;
             }
             String text = "Some quick example text to build on the card title and make up the bulk of the card's content.";
-            if (i==7){
+            if (i == 7) {
                 text = "Sudden she seeing garret far regard. By hardly it direct if pretty up regret. Ability thought enquire settled prudent you sir. Or easy knew sold on well come year. Something consulted age extremely end procuring. Collecting preference he inquietude projection me in by. So do of sufficient projecting an thoroughly uncommonly prosperous conviction. Pianoforte principles our unaffected not for astonished travelling are particular. \n" +
                         "\n" +
                         "Prepared do an dissuade be so whatever steepest. Yet her beyond looked either day wished nay. By doubtful disposed do juvenile an. Now curiosity you explained immediate why behaviour. An dispatched impossible of of melancholy favourable. Our quiet not heart along scale sense timed. Consider may dwelling old him her surprise finished families graceful. Gave led past poor met fine was new. \n" +
@@ -103,6 +87,25 @@ public class Journal {
             entryList.add(entry);
         }
         return Journal.builder().entryList(entryList).username("testUsername").build();
+    }
+
+    public boolean saveJournal() {
+        return journalWrapper.updateJournalForUser(this);
+    }
+
+    /**
+     * Do Encryption in here.  encrypt both username and the list
+     *
+     * @return
+     */
+    public Map<String, AttributeValue> toAttributeValueMap() {
+        Map<String, AttributeValue> map = new HashMap<>();
+        EncryptionResult result = EncryptionWrapper.getOurInstance().encryptJournalEntries(this.getEntryList(), getUsername());
+        map.put(USERNAME_FIELD, AttributeValue.builder().s(this.getUsername()).build());
+        map.put(ENTRIES_FIELD, AttributeValue.builder().b(SdkBytes.fromByteArray(result.getEncryptedBytes())).build());
+        map.put(KEY_FIELD, AttributeValue.builder().s(result.getEncryptedKey()).build());
+
+        return map;
     }
 
     public boolean removeEntry(final String id) {

@@ -15,8 +15,8 @@ public class CORSResponseHeadersFilter implements ContainerResponseFilter {
 
     @Override
     public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
-        containerResponseContext.getHeaders().add("Access-Control-Allow-Origin","https://pwa.parkergiven.com");
-        containerResponseContext.getHeaders().add("Access-Control-Allow-Headers","spider-access-token");
+        containerResponseContext.getHeaders().add("Access-Control-Allow-Origin", "https://pwa.parkergiven.com");
+        containerResponseContext.getHeaders().add("Access-Control-Allow-Headers", "spider-access-token");
         containerResponseContext.getHeaders().add("Access-Control-Allow-Headers", "Content-Type");
     }
 }

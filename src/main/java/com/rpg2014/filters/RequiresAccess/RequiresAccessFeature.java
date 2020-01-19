@@ -1,8 +1,5 @@
 package com.rpg2014.filters.RequiresAccess;
 
-import com.rpg2014.filters.RequiresLogin.RequiresLogin;
-import com.rpg2014.filters.RequiresLogin.RequiresLoginFilter;
-
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
@@ -14,7 +11,7 @@ public class RequiresAccessFeature implements DynamicFeature {
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext featureContext) {
         RequiresAccess requiresAccess = resourceInfo.getResourceMethod().getAnnotation(RequiresAccess.class);
-        if(requiresAccess == null){
+        if (requiresAccess == null) {
             return;
         }
         RequiresAuthFilter filter = new RequiresAuthFilter();

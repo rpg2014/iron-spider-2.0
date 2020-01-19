@@ -2,14 +2,19 @@ package com.rpg2014.wrappers;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.*;
+import software.amazon.awssdk.services.dynamodb.model.AttributeAction;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValueUpdate;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 import javax.ws.rs.InternalServerErrorException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MinecraftDynamoWrapper {
-    private static MinecraftDynamoWrapper ourInstance = new MinecraftDynamoWrapper();
     private static final String ITEM_ID = "itemId";
     private static final String AMI_ID = "amiId";
     private static final String INSTANCE_ID = "instanceId";
@@ -17,6 +22,7 @@ public class MinecraftDynamoWrapper {
     private static final String SNAPSHOT_ID = "snapshotId";
     private static final String TABLE_NAME = "minecraftServerDetails";
     private static final String VALUE = "value";
+    private static MinecraftDynamoWrapper ourInstance = new MinecraftDynamoWrapper();
     private DynamoDbClient client;
 
     private MinecraftDynamoWrapper() {
@@ -27,7 +33,9 @@ public class MinecraftDynamoWrapper {
         return ourInstance;
     }
 
-    public boolean isServerRunning() { return getItem(SERVER_RUNNING).get(VALUE).bool(); }
+    public boolean isServerRunning() {
+        return getItem(SERVER_RUNNING).get(VALUE).bool();
+    }
 
     public void setServerRunning() {
         setItem(SERVER_RUNNING, true);
@@ -86,7 +94,7 @@ public class MinecraftDynamoWrapper {
         } catch (ResourceNotFoundException e) {
             throw new InternalServerErrorException("failed on client.updateItem in setItem() (boolean)");
         } catch (DynamoDbException e) {
-            throw new InternalServerErrorException("Failed to get "+ itemId +" from dynamo");
+            throw new InternalServerErrorException("Failed to get " + itemId + " from dynamo");
         }
     }
 
@@ -108,7 +116,7 @@ public class MinecraftDynamoWrapper {
         } catch (ResourceNotFoundException e) {
             throw new InternalServerErrorException("failed on client.updateItem in setItem() (string)");
         } catch (DynamoDbException e) {
-            throw new InternalServerErrorException("Failed to get "+itemId +" from dynamo");
+            throw new InternalServerErrorException("Failed to get " + itemId + " from dynamo");
         }
     }
 }

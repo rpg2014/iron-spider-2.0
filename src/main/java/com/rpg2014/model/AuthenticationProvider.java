@@ -1,6 +1,7 @@
 package com.rpg2014.model;
 
-import com.google.common.cache.*;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.rpg2014.wrappers.AuthDynamoWrapper;
 
 import java.util.concurrent.TimeUnit;
@@ -11,14 +12,14 @@ public class AuthenticationProvider {
 
     AuthDynamoWrapper dynamoWrapper = AuthDynamoWrapper.getInstance();
 
-    public boolean hasAccess(final String username){
+    public boolean hasAccess(final String username) {
         AuthorizationDetails authDetails = trueCache.getIfPresent(username);
         if (null != authDetails) {
             dynamoWrapper.startedServer(authDetails);
             return authDetails.isAllowedToStartServer();
         }
         authDetails = falseCache.getIfPresent(username);
-        if(null != authDetails){
+        if (null != authDetails) {
             return authDetails.isAllowedToStartServer();
         }
         authDetails = dynamoWrapper.isAuthorized(username);
@@ -27,11 +28,11 @@ public class AuthenticationProvider {
         return authDetails.isAllowedToStartServer();
     }
 
-    private void put(final String username, final AuthorizationDetails authDetails){
-        if(authDetails.isAllowedToStartServer()){
+    private void put(final String username, final AuthorizationDetails authDetails) {
+        if (authDetails.isAllowedToStartServer()) {
             trueCache.put(username, authDetails);
-        }else {
-            falseCache.put(username,authDetails);
+        } else {
+            falseCache.put(username, authDetails);
         }
     }
 }

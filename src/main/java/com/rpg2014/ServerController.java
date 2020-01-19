@@ -7,7 +7,6 @@ import com.rpg2014.model.Ec2MethodNames;
 import com.rpg2014.model.ServerControllerInterface;
 import com.rpg2014.model.Status;
 import com.rpg2014.model.StatusResponse;
-
 import com.rpg2014.model.start.StartResponse;
 import com.rpg2014.model.stop.StopResponse;
 
@@ -24,6 +23,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/server")
 public class ServerController implements ServerControllerInterface {
     EC2Invoker ec2Invoker = new EC2Invoker();
+
     /**
      * Method handling HTTP GET requests. The returned object will be sent
      * to the client as "json" media type.

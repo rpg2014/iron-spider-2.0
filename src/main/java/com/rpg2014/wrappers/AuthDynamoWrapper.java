@@ -1,7 +1,5 @@
 package com.rpg2014.wrappers;
 
-import com.google.common.cache.ForwardingLoadingCache;
-import com.google.common.cache.LoadingCache;
 import com.rpg2014.model.AuthorizationDetails;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.regions.Region;
@@ -9,7 +7,6 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
@@ -25,15 +22,15 @@ public class AuthDynamoWrapper {
     private static final String HAS_ACCESS_VALUE_KEY = "hasAccess";
     private static final String NUM_OF_STARTS_VALUE_KEY = "numberOfStarts";
     private static final String TABLE_NAME = "MinecraftAuthZTable";
-    private DynamoDbClient client;
     private static AuthDynamoWrapper ourInstance = new AuthDynamoWrapper();
-
-    public static AuthDynamoWrapper getInstance() {
-        return ourInstance;
-    }
+    private DynamoDbClient client;
 
     private AuthDynamoWrapper() {
         client = DynamoDbClient.builder().region(Region.US_EAST_1).build();
+    }
+
+    public static AuthDynamoWrapper getInstance() {
+        return ourInstance;
     }
 
     public AuthorizationDetails isAuthorized(final String userName) {
@@ -45,7 +42,6 @@ public class AuthDynamoWrapper {
         log.info("User " + userName + ", Has access: " + itemMap.get(HAS_ACCESS_VALUE_KEY).bool());
         return createAuthDetails(itemMap);
     }
-
 
 
     private Map<String, AttributeValue> getItem(final String username) {
@@ -100,7 +96,7 @@ public class AuthDynamoWrapper {
     }
 
     public void startedServer(AuthorizationDetails authDetails) {
-        authDetails.setNumberOfStarts(authDetails.getNumberOfStarts()+1);
+        authDetails.setNumberOfStarts(authDetails.getNumberOfStarts() + 1);
         log.info("Updating dynamo entry for user: {}, number of server starts = {}", authDetails.getUsername(), authDetails.getNumberOfStarts());
 
         Map<String, AttributeValue> item = new HashMap<>();

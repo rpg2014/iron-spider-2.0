@@ -13,7 +13,7 @@ public class RequiresLoginFeature implements DynamicFeature {
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext featureContext) {
         RequiresLogin requiresLogin = resourceInfo.getResourceMethod().getAnnotation(RequiresLogin.class);
-        if(requiresLogin == null){
+        if (requiresLogin == null) {
             return;
         }
         RequiresLoginFilter filter = null;

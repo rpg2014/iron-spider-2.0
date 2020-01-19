@@ -15,16 +15,19 @@ import javax.ws.rs.ext.Provider;
 public class IronSpiderExceptionMapper implements ExceptionMapper<WebApplicationException> {
     @Override
     public Response toResponse(WebApplicationException e) {
-        if(e instanceof NotAuthorizedException){
+        if (e instanceof NotAuthorizedException) {
             Response response = Response.status(Response.Status.UNAUTHORIZED).entity(ErrorResponse.builder().errorMessage(e.getMessage()).build()).build();
             return response;
-        }if (e instanceof ForbiddenException){
+        }
+        if (e instanceof ForbiddenException) {
             Response response = Response.status(Response.Status.FORBIDDEN).entity(ErrorResponse.builder().errorMessage(e.getMessage()).build()).build();
             return response;
-        }if (e instanceof InternalServerErrorException){
+        }
+        if (e instanceof InternalServerErrorException) {
             Response response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ErrorResponse.builder().errorMessage(e.getMessage())).build();
             return response;
-        }if (e instanceof BadRequestException){
+        }
+        if (e instanceof BadRequestException) {
             Response response = Response.status(Response.Status.BAD_REQUEST).entity(ErrorResponse.builder().errorMessage(e.getMessage())).build();
             return response;
         }

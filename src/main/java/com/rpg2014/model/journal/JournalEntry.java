@@ -6,7 +6,6 @@ import lombok.NonNull;
 import lombok.var;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -38,7 +37,7 @@ public class JournalEntry {
 
     public static JournalEntry from(CreateEntryRequest request) {
         LocalDateTime date = LocalDateTime.now();
-        if(request.getDateTime()!=null){
+        if (request.getDateTime() != null) {
             date = request.getDateTime();
         }
         return JournalEntry.builder().title(request.getTitle())
@@ -50,7 +49,7 @@ public class JournalEntry {
 
     public static JournalEntry from(EditEntryRequest request) {
         LocalDateTime date = LocalDateTime.now();
-        if(request.getDateTime()!=null){
+        if (request.getDateTime() != null) {
             date = request.getDateTime();
         }
         return JournalEntry.builder().title(request.getTitle())
@@ -59,6 +58,7 @@ public class JournalEntry {
                 .dateTime(date)
                 .id(request.getId()).build();
     }
+
     public static JournalEntry from(AttributeValue attributeValue) {
         var attributeMap = attributeValue.m();
         String title = attributeMap.get(TITLE).s();
@@ -73,7 +73,7 @@ public class JournalEntry {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(ID, AttributeValue.builder().s(this.getId()).build());
         valueMap.put(TITLE, AttributeValue.builder().s(this.getTitle()).build());
-        valueMap.put(TEXT, AttributeValue.builder().s(this.getText()).build()   );
+        valueMap.put(TEXT, AttributeValue.builder().s(this.getText()).build());
         valueMap.put(IS_MARKDOWN, AttributeValue.builder().bool(this.isMarkdown()).build());
         valueMap.put(DATE_TIME, AttributeValue.builder().s(this.getDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)).build());
 

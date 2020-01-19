@@ -28,7 +28,7 @@ public class EC2Invoker {
         }
     }
 
-    private Runnable getAsyncRunnable(Ec2MethodNames methodName){
+    private Runnable getAsyncRunnable(Ec2MethodNames methodName) {
         return () -> {
             Method method = null;
             try {
@@ -41,7 +41,7 @@ public class EC2Invoker {
         };
     }
 
-    private Optional invokeMethod(Ec2MethodNames methodName){
+    private Optional invokeMethod(Ec2MethodNames methodName) {
         Method method = null;
         try {
             method = instance.getClass().getDeclaredMethod(methodName.getMethodName());

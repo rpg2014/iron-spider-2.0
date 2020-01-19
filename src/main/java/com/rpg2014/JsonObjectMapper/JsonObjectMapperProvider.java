@@ -17,16 +17,16 @@ import javax.ws.rs.ext.Provider;
 @Produces(MediaType.APPLICATION_JSON)
 public class JsonObjectMapperProvider extends JacksonJaxbJsonProvider {
 
-   private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper();
 
-   static {
-       mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-       mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
-       mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-       mapper.enable(SerializationFeature.INDENT_OUTPUT);
-       mapper.registerModule(new JavaTimeModule());
-       mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,false);
-   }
+    static {
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    }
 
     public JsonObjectMapperProvider() {
         super();

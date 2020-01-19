@@ -11,13 +11,13 @@ public enum Status {
 
     int statusCode;
 
-    Status(int code ){
+    Status(int code) {
         this.statusCode = code;
     }
 
-    public static Status of(int code ){
-        for (Status s : Status.values()){
-            if(s.statusCode == code)
+    public static Status of(int code) {
+        for (Status s : Status.values()) {
+            if (s.statusCode == code)
                 return s;
         }
         return null;

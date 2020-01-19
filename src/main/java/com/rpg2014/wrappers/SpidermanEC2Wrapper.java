@@ -4,7 +4,6 @@ import com.rpg2014.model.Status;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.ec2.Ec2ClientBuilder;
 import software.amazon.awssdk.services.ec2.model.CreateImageRequest;
 import software.amazon.awssdk.services.ec2.model.CreateImageResponse;
 import software.amazon.awssdk.services.ec2.model.DeleteSnapshotRequest;
@@ -110,8 +109,8 @@ public class SpidermanEC2Wrapper {
             String instanceId = serverDetails.getInstanceId();
             String currentAMIId = serverDetails.getAmiID();
             String currentSnapshot = serverDetails.getSnapshotId();
-            if(!oldAMIid.equals(currentAMIId)){
-                log.error("OLD AMI IS OUT OF DATE, oldami: {} , dynamoAMI: {}",oldAMIid, currentAMIId);
+            if (!oldAMIid.equals(currentAMIId)) {
+                log.error("OLD AMI IS OUT OF DATE, oldami: {} , dynamoAMI: {}", oldAMIid, currentAMIId);
             }
             StopInstancesRequest request = StopInstancesRequest.builder().instanceIds(instanceId).build();
             ec2Client.stopInstances(request);
@@ -149,7 +148,7 @@ public class SpidermanEC2Wrapper {
     private void waitForSnapshotToBeCreated() {
         DescribeSnapshotsResponse response;
         List<Snapshot> finishedSnapshots = new ArrayList<>();
-        do{
+        do {
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
@@ -157,34 +156,34 @@ public class SpidermanEC2Wrapper {
                 throw new InternalServerErrorException(e.getMessage());
             }
             DescribeSnapshotsRequest request = DescribeSnapshotsRequest.builder()
-                    .ownerIds(AWS_ACCOUNT_ID.replaceAll("-","")).build();
+                    .ownerIds(AWS_ACCOUNT_ID.replaceAll("-", "")).build();
             response = ec2Client.describeSnapshots(request);
             if (response.snapshots().size() > 1)
                 finishedSnapshots = response.snapshots().stream()
                         .filter(snapshot -> snapshot.progress().contains("100"))
                         .collect(Collectors.toList());
-        }while(finishedSnapshots.size() != response.snapshots().size() && response.snapshots().size() == 1);
+        } while (finishedSnapshots.size() != response.snapshots().size() && response.snapshots().size() == 1);
     }
 
     private void waitForServerStop(String instanceId) {
-        log.info("Waiting for instance "+ instanceId+ "to stop");
-        do{
+        log.info("Waiting for instance " + instanceId + "to stop");
+        do {
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }while(!isInstanceStopped());
+        } while (!isInstanceStopped());
     }
 
     private String getNewestSnapshot() {
         DescribeSnapshotsRequest request = DescribeSnapshotsRequest.builder()
-                .ownerIds(AWS_ACCOUNT_ID.replaceAll("-","")).build();
+                .ownerIds(AWS_ACCOUNT_ID.replaceAll("-", "")).build();
         DescribeSnapshotsResponse response = ec2Client.describeSnapshots(request);
-        Snapshot newestSnap= Snapshot.builder().startTime(new Date(Long.MIN_VALUE).toInstant()).build();
+        Snapshot newestSnap = Snapshot.builder().startTime(new Date(Long.MIN_VALUE).toInstant()).build();
 
-        for(Snapshot snapshot: response.snapshots()){
-            if(newestSnap.startTime().isBefore(snapshot.startTime()))
+        for (Snapshot snapshot : response.snapshots()) {
+            if (newestSnap.startTime().isBefore(snapshot.startTime()))
                 newestSnap = snapshot;
         }
         log.info("Newest Snapshot is " + newestSnap.snapshotId());
@@ -201,16 +200,16 @@ public class SpidermanEC2Wrapper {
     private String makeAMI(String instanceId) {
         CreateImageRequest createImageRequest = CreateImageRequest.builder()
                 .instanceId(instanceId)
-                .name(AMI_NAME+ "-" + Instant.now().hashCode())
+                .name(AMI_NAME + "-" + Instant.now().hashCode())
                 .build();
         CreateImageResponse createImageResponse = ec2Client.createImage(createImageRequest);
         String amiId = createImageResponse.imageId();
-        log.info("Created AMI, image id: "+ amiId);
+        log.info("Created AMI, image id: " + amiId);
         return amiId;
     }
 
     public void rebootInstance() {
-        if(serverDetails.isServerRunning()) {
+        if (serverDetails.isServerRunning()) {
             RebootInstancesRequest request = RebootInstancesRequest.builder()
                     .instanceIds(serverDetails.getInstanceId()).build();
             RebootInstancesResponse result = ec2Client.rebootInstances(request);
@@ -226,8 +225,8 @@ public class SpidermanEC2Wrapper {
         try {
             DescribeInstancesResponse response = ec2Client.describeInstances(request);
             return response.reservations().get(0).instances().get(0).publicDnsName();
-        }catch (Ec2Exception e){
-            if(e.getMessage().contains("Invalid id")){
+        } catch (Ec2Exception e) {
+            if (e.getMessage().contains("Invalid id")) {
                 throw new BadRequestException("Server is not running");
             }
             throw new InternalServerErrorException(e.getMessage());
@@ -246,42 +245,42 @@ public class SpidermanEC2Wrapper {
         String instanceId = serverDetails.getInstanceId();
         DescribeInstancesRequest request = DescribeInstancesRequest.builder().instanceIds(instanceId).build();
         DescribeInstancesResponse response = ec2Client.describeInstances(request);
-        if(response.reservations().size() == 0 || response.reservations().get(0).instances().size() ==0)
+        if (response.reservations().size() == 0 || response.reservations().get(0).instances().size() == 0)
             return false;
         boolean isUp = response.reservations().get(0).instances().get(0).state().code() == 16;
-        if(isUp)
-            log.info("Server instance "+ instanceId +" is up");
+        if (isUp)
+            log.info("Server instance " + instanceId + " is up");
         else
-            log.info("Server instance "+ instanceId +" is down");
+            log.info("Server instance " + instanceId + " is down");
         return isUp;
     }
 
-    private boolean isInstanceStopped(){
+    private boolean isInstanceStopped() {
         DescribeInstancesRequest request = DescribeInstancesRequest.builder()
                 .instanceIds(serverDetails.getInstanceId()).build();
         DescribeInstancesResponse response = ec2Client.describeInstances(request);
-        if(response.reservations().size() == 0 || response.reservations().get(0).instances().size() ==0)
+        if (response.reservations().size() == 0 || response.reservations().get(0).instances().size() == 0)
             return true;
         boolean isDown = response.reservations().get(0).instances().get(0).state().code() == 80;
-        if(isDown)
-            log.info("Server Instance "+ serverDetails.getInstanceId() + "is down");
+        if (isDown)
+            log.info("Server Instance " + serverDetails.getInstanceId() + "is down");
         return isDown;
     }
 
-    public Status getInstanceStatus(){
+    public Status getInstanceStatus() {
         DescribeInstancesRequest request = DescribeInstancesRequest.builder()
                 .instanceIds(serverDetails.getInstanceId()).build();
         try {
             DescribeInstancesResponse response = ec2Client.describeInstances(request);
             Status status;
-            if(response.reservations().size() == 0){
+            if (response.reservations().size() == 0) {
                 status = Status.Terminated;
-            }else {
+            } else {
                 status = Status.of(response.reservations().get(0).instances().get(0).state().code());
             }
             return status;
-        }catch (Ec2Exception e){
-            if(e.getMessage().contains("Invalid id") || e.getMessage().contains("does not exist")){
+        } catch (Ec2Exception e) {
+            if (e.getMessage().contains("Invalid id") || e.getMessage().contains("does not exist")) {
                 return Status.Terminated;
             }
             e.printStackTrace();

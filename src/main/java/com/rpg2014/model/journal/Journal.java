@@ -6,6 +6,9 @@ import com.rpg2014.wrappers.JournalDDBWrapper;
 import com.rpg2014.wrappers.JournalKeyDDBWrapper;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -14,6 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Builder
+@Slf4j
 public class Journal {
     static JournalDDBWrapper journalWrapper = JournalDDBWrapper.getInstance();
 
@@ -28,7 +32,12 @@ public class Journal {
     String username;
 
     static public Journal getJournalForUser(final String username) {
-        return  Journal.from(journalWrapper.getJournalForUser(username));
+        var journalMap = journalWrapper.getJournalForUser(username);
+        if(journalMap == null){
+            log.info("Journal entry not found, creating new one for user, {}", username);
+            return Journal.builder().username(username).entryList(new ArrayList<>()).build();
+        }
+        return  Journal.from(journalMap);
     }
 
 
@@ -37,7 +46,7 @@ public class Journal {
      * @param journalMap
      * @return
      */
-    public static Journal from(Map<String, AttributeValue> journalMap) {
+    public static Journal from(@NonNull Map<String, AttributeValue> journalMap) {
         String username = journalMap.get(USERNAME_FIELD).s();
         SdkBytes bytes = journalMap.get(ENTRIES_FIELD).b();
         // not yet implement.  In the future maybe each person gets their own key.

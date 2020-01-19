@@ -43,19 +43,16 @@ public class JournalDDBWrapper {
 
 
 
-    private Map<String, AttributeValue> getItem(final String itemId) {
+    private Map<String, AttributeValue> getItem(final String username) {
         HashMap<String, AttributeValue> map = new HashMap<>();
-        map.put(USERNAME_FIELD, AttributeValue.builder().s(itemId).build());
+        map.put(USERNAME_FIELD, AttributeValue.builder().s(username).build());
         GetItemRequest request = GetItemRequest.builder().key(map).tableName(TABLE_NAME).build();
 
         try {
             return client.getItem(request).item();
         } catch (ResourceNotFoundException e) {
             log.info(e.getMessage());
-            log.info("Journal entry not found, creating new one for user, {}", itemId);
-            Map<String, AttributeValue> newJournal = new HashMap<String, AttributeValue>();
-            newJournal.put(ENTRIES_FIELD, AttributeValue.builder().l(new ArrayList<AttributeValue>()).build());
-            return newJournal;
+            return null;
         } catch (DynamoDbException e) {
             log.error(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());

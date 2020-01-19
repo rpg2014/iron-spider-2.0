@@ -10,10 +10,8 @@ import lombok.Setter;
 public class AuthorizationDetails {
 
     @Setter
-    @NonNull
     private long numberOfStarts;
 
-    @NonNull
     private boolean allowedToStartServer;
 
     @NonNull

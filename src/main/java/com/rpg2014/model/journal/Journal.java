@@ -1,17 +1,75 @@
 package com.rpg2014.model.journal;
 
+import com.rpg2014.model.EncryptionResult;
+import com.rpg2014.wrappers.EncryptionWrapper;
+import com.rpg2014.wrappers.JournalDDBWrapper;
+import com.rpg2014.wrappers.JournalKeyDDBWrapper;
+import lombok.Builder;
 import lombok.Getter;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Builder
 public class Journal {
-    static Map<String,Journal> journalMap = new HashMap<>();
+    static JournalDDBWrapper journalWrapper = JournalDDBWrapper.getInstance();
+
+    private static final String USERNAME_FIELD = "username";
+    private static final String ENTRIES_FIELD = "entries";
+    private static final String KEY_FIELD = "key";
+
     @Getter
     List<JournalEntry> entryList;
 
-    public Journal(){
-        this.entryList = new ArrayList<JournalEntry>();
+    @Getter
+    String username;
+
+    static public Journal getJournalForUser(final String username) {
+        return  Journal.from(journalWrapper.getJournalForUser(username));
+    }
+
+
+    /**
+     * do decvryption here 
+     * @param journalMap
+     * @return
+     */
+    public static Journal from(Map<String, AttributeValue> journalMap) {
+        String username = journalMap.get(USERNAME_FIELD).s();
+        SdkBytes bytes = journalMap.get(ENTRIES_FIELD).b();
+        // not yet implement.  In the future maybe each person gets their own key.
+        //String key = journalMap.get(KEY_FIELD).s();
+        List<JournalEntry> journalEntryList = EncryptionWrapper.getOurInstance().decryptBytesToJournalList(bytes, username);
+        return Journal.builder().username(username).entryList(journalEntryList).build();
+    }
+
+    public boolean saveJournal() {
+        return journalWrapper.updateJournalForUser(this);
+    }
+
+    /**
+     * Do Encryption in here.  encrypt both username and the list
+     * @return
+     */
+    public Map<String, AttributeValue> toAttributeValueMap() {
+        Map<String, AttributeValue> map = new HashMap<>();
+        EncryptionResult result = EncryptionWrapper.getOurInstance().encryptJournalEntries(this.getEntryList(), getUsername());
+        map.put(USERNAME_FIELD, AttributeValue.builder().s(this.getUsername()).build()    );
+        map.put(ENTRIES_FIELD, AttributeValue.builder().b(SdkBytes.fromByteArray(result.getEncryptedBytes())).build());
+        map.put(KEY_FIELD, AttributeValue.builder().s(result.getEncryptedKey()).build());
+
+        return map;
+    }
+
+    /**
+     * Temp for testing
+     */
+    public static Journal createTestJournal(){
+
+        List<JournalEntry> entryList = new ArrayList<JournalEntry>();
 
         for (int i = 0; i < 10; i++) {
             String title = "Title";
@@ -35,14 +93,15 @@ public class Journal {
 
             entryList.add(entry);
         }
+        return Journal.builder().entryList(entryList).username("testUsername").build();
     }
 
-    static public Journal getJournalForUser(final String username) {
-        if (journalMap.containsKey(username)) {
-            return journalMap.get(username);
-        }else {
-            journalMap.put(username, new Journal());
-            return journalMap.get(username);
-        }
+    public boolean removeEntry(final String id) {
+        List<JournalEntry> list = this.getEntryList();
+        return list.removeIf((journalEntry -> journalEntry.getId().equals(id)));
+    }
+
+    public boolean addEntry(JournalEntry entry) {
+        return this.getEntryList().add(entry);
     }
 }

@@ -8,12 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import java.time.LocalDateTime;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAmount;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static com.rpg2014.filters.RequiresLogin.RequiresLoginFilter.USERNAME_HEADER_NAME;
 
@@ -45,8 +40,9 @@ public class JournalController implements JournalControllerInterface {
         log.info(request.toString());
         log.info("Username="+username);
         Journal journal = Journal.getJournalForUser(username);
-        journal.getEntryList().add(JournalEntry.of(request));
-        return CreateEntryResponse.builder().success(true).build();
+        boolean success = journal.addEntry(JournalEntry.from(request));
+        success = success && journal.saveJournal();
+        return CreateEntryResponse.builder().success(success).build();
     }
 
     @Override
@@ -60,8 +56,9 @@ public class JournalController implements JournalControllerInterface {
         log.info("DeleteEntryRequest Received");
         log.info(request.toString());
         log.info("Username="+username);
-        List<JournalEntry> list = Journal.getJournalForUser(username).getEntryList();
-        boolean success = list.removeIf((journalEntry -> journalEntry.getId().equals(request.getEntryId())));
+        Journal journal = Journal.getJournalForUser(username);
+        boolean success = journal.removeEntry(request.getEntryId());
+        success = success && journal.saveJournal();
         return DeleteEntryResponse.builder().success(success).build();
     }
 
@@ -76,7 +73,12 @@ public class JournalController implements JournalControllerInterface {
         log.info("EditEntryRequest Received");
         log.info(request.toString());
         log.info("Username="+username);
-
-        return EditEntryResponse.builder().success(false).build();
+        Journal journal = Journal.getJournalForUser(username);
+        //remove old entry
+         boolean success = journal.removeEntry(request.getId());
+         //add new
+        success = success && journal.addEntry(JournalEntry.from(request));
+        success = success && journal.saveJournal();
+        return EditEntryResponse.builder().success(success).build();
     }
 }

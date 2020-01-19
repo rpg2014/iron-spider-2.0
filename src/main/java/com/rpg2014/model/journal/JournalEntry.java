@@ -25,16 +25,19 @@ public class JournalEntry {
     private static final String TITLE = "title";
     private static final String DATE_TIME = "dateTime";
     @NonNull
+    @JsonProperty("id")
     String id;
 
     @NonNull
+    @JsonProperty("text")
     String text;
-
+    @JsonProperty("isMarkdown")
     boolean isMarkdown;
-
+    @JsonProperty("title")
     String title;
 
     @NonNull
+    @JsonProperty("dateTime")
     LocalDateTime dateTime;
 
     @JsonCreator

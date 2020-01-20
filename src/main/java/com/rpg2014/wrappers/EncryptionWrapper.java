@@ -52,8 +52,6 @@ public class EncryptionWrapper {
         final Map<String, String> context = Collections.singletonMap(USERNAME, username);
         try {
             String listString = jsonObjectMapper.writeValueAsString(journalEntryList);
-            log.info(listString);
-
             CryptoResult<byte[], KmsMasterKey> result = crypto.encryptData(keyProvider, listString.getBytes(), context);
             return EncryptionResult.builder().encryptedKey(KEY_ARN).encryptedBytes(result.getResult()).build();
         } catch (JsonProcessingException e) {

@@ -13,11 +13,11 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 
 @Builder
 @Slf4j
@@ -54,6 +54,7 @@ public class Journal {
         // not yet implement.  In the future maybe each person gets their own key.
         //String key = journalMap.get(KEY_FIELD).s();
         List<JournalEntry> journalEntryList = EncryptionWrapper.getOurInstance().decryptBytesToJournalList(bytes, username);
+        journalEntryList.sort(Collections.reverseOrder());
         return Journal.builder().username(username).entryList(journalEntryList).build();
     }
 

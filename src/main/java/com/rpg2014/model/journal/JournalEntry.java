@@ -8,6 +8,7 @@ import lombok.NonNull;
 import lombok.var;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
+import javax.ws.rs.InternalServerErrorException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class JournalEntry {
+public class JournalEntry implements Comparable {
 
     private static final String ID = "id";
     private static final String TEXT = "text";
@@ -99,5 +100,13 @@ public class JournalEntry {
         valueMap.put(DATE_TIME, AttributeValue.builder().s(this.getDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)).build());
 
         return AttributeValue.builder().m(valueMap).build();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if(o instanceof JournalEntry) {
+            return this.getDateTime().compareTo(((JournalEntry) o).getDateTime());
+        }else
+            throw new InternalServerErrorException("Unable to compare object to Journal entry");
     }
 }

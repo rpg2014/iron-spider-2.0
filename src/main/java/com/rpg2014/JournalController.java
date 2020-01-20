@@ -81,7 +81,7 @@ public class JournalController implements JournalControllerInterface {
     @RequiresLogin
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public EditEntryResponse editEntry(EditEntryRequest request,
+    public EditEntryResponse editEntry(@BeanParam EditEntryRequest request,
                                        @HeaderParam(USERNAME_HEADER_NAME) String username) {
         log.info("EditEntryRequest Received");
         log.info(request.toString());

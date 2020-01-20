@@ -18,5 +18,8 @@ public class CORSResponseHeadersFilter implements ContainerResponseFilter {
         containerResponseContext.getHeaders().add("Access-Control-Allow-Origin", "https://pwa.parkergiven.com");
         containerResponseContext.getHeaders().add("Access-Control-Allow-Headers", "spider-access-token");
         containerResponseContext.getHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+        containerResponseContext.getHeaders().add("Access-Control-Allow-Methods", "DELETE");
+        containerResponseContext.getHeaders().add("Access-Control-Allow-Methods", "GET");
+        containerResponseContext.getHeaders().add("Access-Control-Allow-Methods", "POST");
     }
 }

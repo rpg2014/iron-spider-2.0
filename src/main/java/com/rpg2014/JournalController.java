@@ -4,7 +4,6 @@ import com.rpg2014.filters.RequiresLogin.RequiresLogin;
 import com.rpg2014.model.JournalControllerInterface;
 import com.rpg2014.model.journal.CreateEntryRequest;
 import com.rpg2014.model.journal.CreateEntryResponse;
-import com.rpg2014.model.journal.DeleteEntryRequest;
 import com.rpg2014.model.journal.DeleteEntryResponse;
 import com.rpg2014.model.journal.EditEntryRequest;
 import com.rpg2014.model.journal.EditEntryResponse;
@@ -20,6 +19,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -64,13 +64,12 @@ public class JournalController implements JournalControllerInterface {
     @Path("/{entryId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public DeleteEntryResponse deleteEntry(@BeanParam DeleteEntryRequest request,
+    public DeleteEntryResponse deleteEntry(@PathParam("entryId") final String entryId,
                                            @HeaderParam(USERNAME_HEADER_NAME) String username) {
-        log.info("DeleteEntryRequest Received");
-        log.info(request.toString());
+        log.info("Request to delete entry {} Received", entryId);
         log.info("Username=" + username);
         Journal journal = Journal.getJournalForUser(username);
-        boolean success = journal.removeEntry(request.getEntryId());
+        boolean success = journal.removeEntry(entryId);
         success = success && journal.saveJournal();
         return DeleteEntryResponse.builder().success(success).build();
     }

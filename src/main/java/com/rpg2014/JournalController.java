@@ -90,7 +90,7 @@ public class JournalController implements JournalControllerInterface {
         //remove old entry
         boolean success = journal.removeEntry(id);
         //add new
-        success = success && journal.addEntry(JournalEntry.from(request));
+        success = success && journal.addEntry(JournalEntry.from(request, id));
         success = success && journal.saveJournal();
         return EditEntryResponse.builder().success(success).build();
     }

@@ -69,7 +69,7 @@ public class JournalEntry implements Comparable {
                 .id(UUID.randomUUID().toString()).build();
     }
 
-    public static JournalEntry from(EditEntryRequest request) {
+    public static JournalEntry from(EditEntryRequest request, final String id) {
         LocalDateTime date = LocalDateTime.now();
         if (request.getDateTime() != null) {
             date = request.getDateTime();
@@ -78,7 +78,7 @@ public class JournalEntry implements Comparable {
                 .text(request.getText())
                 .isMarkdown(request.isMarkdown())
                 .dateTime(date)
-                .id(request.getId()).build();
+                .id(id).build();
     }
 
     public static JournalEntry from(AttributeValue attributeValue) {

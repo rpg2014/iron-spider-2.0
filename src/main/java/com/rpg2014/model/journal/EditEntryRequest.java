@@ -22,7 +22,7 @@ public class EditEntryRequest {
                             @JsonProperty("isMarkdown") boolean isMarkdown) {
         this.text = text;
         this.title = title;
-        this.isMarkdown = isMarkdown;
         this.dateTime = dateTime;
+        this.isMarkdown = isMarkdown;
     }
 }

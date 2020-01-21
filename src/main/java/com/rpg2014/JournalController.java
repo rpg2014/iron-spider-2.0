@@ -81,13 +81,14 @@ public class JournalController implements JournalControllerInterface {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public EditEntryResponse editEntry(@BeanParam EditEntryRequest request,
+                                       @PathParam("entryId") String id,
                                        @HeaderParam(USERNAME_HEADER_NAME) String username) {
         log.info("EditEntryRequest Received");
         log.info(request.toString());
         log.info("Username=" + username);
         Journal journal = Journal.getJournalForUser(username);
         //remove old entry
-        boolean success = journal.removeEntry(request.getId());
+        boolean success = journal.removeEntry(id);
         //add new
         success = success && journal.addEntry(JournalEntry.from(request));
         success = success && journal.saveJournal();

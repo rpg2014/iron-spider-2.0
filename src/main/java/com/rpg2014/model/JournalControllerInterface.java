@@ -15,6 +15,6 @@ public interface JournalControllerInterface {
 
     DeleteEntryResponse deleteEntry(String entryId, String username);
 
-    EditEntryResponse editEntry(EditEntryRequest request, String username);
+    EditEntryResponse editEntry(EditEntryRequest request, String id, String username);
 
 }

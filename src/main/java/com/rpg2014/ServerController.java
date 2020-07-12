@@ -10,6 +10,8 @@ import com.rpg2014.model.StatusResponse;
 import com.rpg2014.model.start.StartResponse;
 import com.rpg2014.model.stop.StopResponse;
 import com.rpg2014.tasks.UpdateMinecraftDNSTask;
+import com.rpg2014.tasks.WaitForServerToBeUp;
+import com.rpg2014.tasks.WaitForServerToShutdown;
 import com.rpg2014.wrappers.MinecraftDynamoWrapper;
 import com.rpg2014.wrappers.Route53Wrapper;
 import com.rpg2014.wrappers.SpidermanEC2Wrapper;
@@ -33,6 +35,11 @@ public class ServerController implements ServerControllerInterface {
             .serverDetails(MinecraftDynamoWrapper.getInstance())
             .build();
 
+    WaitForServerToBeUp waitForServerToBeUpTask = WaitForServerToBeUp.builder()
+            .ec2Wrapper(SpidermanEC2Wrapper.getInstance())
+            .build();
+    WaitForServerToShutdown waitForServerToShutDownTask = WaitForServerToShutdown.builder()
+            .ec2Wrapper(SpidermanEC2Wrapper.getInstance()).build();
 
     /**
      * Method handling HTTP GET requests. The returned object will be sent
@@ -68,6 +75,7 @@ public class ServerController implements ServerControllerInterface {
     @RequiresAccess
     public StartResponse serverStart() {
         taskRunner.runEC2Task(Ec2MethodNames.StartInstance);
+        taskRunner.runAsyncTask(waitForServerToBeUpTask);
         taskRunner.runAsyncTask(updateMinecraftDNSTask);
         return StartResponse.builder().serverStarted(true).build();
     }
@@ -80,6 +88,7 @@ public class ServerController implements ServerControllerInterface {
     @RequiresAccess
     public StopResponse serverStop() {
         taskRunner.runEC2Task(Ec2MethodNames.StopInstance);
+        taskRunner.runAsyncTask(waitForServerToShutDownTask);
         taskRunner.runAsyncTask(updateMinecraftDNSTask);
         return StopResponse.builder().serverStopping(true).build();
     }

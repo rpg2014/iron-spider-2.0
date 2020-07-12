@@ -1,5 +1,6 @@
 package com.rpg2014.tasks;
 
+import com.rpg2014.model.Status;
 import com.rpg2014.wrappers.MinecraftDynamoWrapper;
 import com.rpg2014.wrappers.Route53Wrapper;
 import com.rpg2014.wrappers.SpidermanEC2Wrapper;

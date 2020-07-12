@@ -2,6 +2,7 @@ package com.rpg2014;
 
 import com.rpg2014.model.Ec2MethodNames;
 import com.rpg2014.wrappers.SpidermanEC2Wrapper;
+import lombok.NonNull;
 
 import javax.ws.rs.InternalServerErrorException;
 import java.lang.reflect.InvocationTargetException;
@@ -10,12 +11,12 @@ import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class EC2Invoker {
+public class TaskRunner {
 
     Executor executor = Executors.newSingleThreadExecutor();
     private SpidermanEC2Wrapper instance = SpidermanEC2Wrapper.getInstance();
 
-    public Optional invoke(Ec2MethodNames methodName) {
+    public Optional runEC2Task(Ec2MethodNames methodName) {
         Runnable r;
         switch (methodName) {
             case StartInstance:
@@ -26,6 +27,10 @@ public class EC2Invoker {
             default:
                 return invokeMethod(methodName);
         }
+    }
+
+    public void runAsyncTask(@NonNull Runnable task) {
+        executor.execute(task);
     }
 
     private Runnable getAsyncRunnable(Ec2MethodNames methodName) {

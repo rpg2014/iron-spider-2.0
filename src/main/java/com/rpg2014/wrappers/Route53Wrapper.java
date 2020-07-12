@@ -35,7 +35,7 @@ public class Route53Wrapper {
     }
 
     private Route53Wrapper() {
-        this.client = Route53Client.builder().region(Region.US_EAST_1).build();
+        this.client = Route53Client.builder().region(Region.AWS_GLOBAL).build();
     }
 
     public boolean updateMinecraftDNS(String ipAddress) {

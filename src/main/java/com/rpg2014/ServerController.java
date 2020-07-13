@@ -64,7 +64,7 @@ public class ServerController implements ServerControllerInterface {
     @Path("/details")
     public DetailsResponse serverDetails() {
         String domainName = (String) taskRunner.runEC2Task(Ec2MethodNames.DomainName).get();
-        return DetailsResponse.builder().domainName(domainName).build();
+        return DetailsResponse.builder().domainName(System.getProperty("minecraftURL")).build();
     }
 
     @Override

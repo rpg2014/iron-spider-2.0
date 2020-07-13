@@ -46,7 +46,7 @@ public class Route53Wrapper {
                                         .action(ChangeAction.UPSERT)
                                         .resourceRecordSet(
                                                 ResourceRecordSet.builder()
-                                                        .name("minecraft.parkergiven.com")
+                                                        .name(System.getenv("minecraftURL"))
                                                         .resourceRecords(
                                                                 ResourceRecord.builder().value(ipAddress).build())
                                                         .ttl(300L)

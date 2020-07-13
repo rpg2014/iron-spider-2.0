@@ -53,7 +53,6 @@ public class ServerController implements ServerControllerInterface {
     @GET
     @Path("/status")
     @Produces(MediaType.APPLICATION_JSON)
-    @RequiresLogin
     public StatusResponse serverStatus() {
         Status status = (Status) taskRunner.runEC2Task(Ec2MethodNames.Status).get();
         return StatusResponse.builder().status(status).build();

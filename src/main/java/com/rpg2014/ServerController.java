@@ -15,6 +15,7 @@ import com.rpg2014.tasks.WaitForServerToShutdown;
 import com.rpg2014.wrappers.MinecraftDynamoWrapper;
 import com.rpg2014.wrappers.Route53Wrapper;
 import com.rpg2014.wrappers.SpidermanEC2Wrapper;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.MediaType;
  */
 
 @Path("/server")
+@Slf4j
 public class ServerController implements ServerControllerInterface {
     TaskRunner taskRunner = new TaskRunner();
     UpdateMinecraftDNSTask updateMinecraftDNSTask = UpdateMinecraftDNSTask.builder()
@@ -64,7 +66,9 @@ public class ServerController implements ServerControllerInterface {
     @Path("/details")
     public DetailsResponse serverDetails() {
         String domainName = (String) taskRunner.runEC2Task(Ec2MethodNames.DomainName).get();
-        return DetailsResponse.builder().domainName(System.getProperty("minecraftURL")).build();
+        String url = System.getProperty("minecraftURL");
+        log.info("url= " + url);
+        return DetailsResponse.builder().domainName(url).build();
     }
 
     @Override

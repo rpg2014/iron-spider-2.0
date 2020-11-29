@@ -16,7 +16,6 @@ import software.amazon.awssdk.services.ec2.model.DescribeSnapshotsRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeSnapshotsResponse;
 import software.amazon.awssdk.services.ec2.model.Ec2Exception;
 import software.amazon.awssdk.services.ec2.model.Filter;
-import software.amazon.awssdk.services.ec2.model.Image;
 import software.amazon.awssdk.services.ec2.model.ImageState;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.ec2.model.InstanceState;
@@ -154,8 +153,8 @@ public class SpidermanEC2Wrapper {
     private void waitForAMIToBeCreated() {
         DescribeImagesResponse response;
 
-        do{
-            try{
+        do {
+            try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -164,16 +163,16 @@ public class SpidermanEC2Wrapper {
             DescribeImagesRequest request = DescribeImagesRequest.builder()
                     .executableUsers("self")
                     .filters(
-                            Filter.builder().name("state").values("pending","failed","error").build()
-                            )
+                            Filter.builder().name("state").values("pending", "failed", "error").build()
+                    )
                     .build();
             response = ec2Client.describeImages(request);
-            if(response.images().stream().anyMatch(image -> image.state().equals(ImageState.FAILED)|| image.state().equals(ImageState.ERROR))){
-                log.error("There is a failed ami" );
+            if (response.images().stream().anyMatch(image -> image.state().equals(ImageState.FAILED) || image.state().equals(ImageState.ERROR))) {
+                log.error("There is a failed ami");
                 throw new InternalServerErrorException("There is a failed AMI, Contact Parker");
             }
 
-        }while(response.images().stream().anyMatch(image -> image.state().equals(ImageState.PENDING)));
+        } while (response.images().stream().anyMatch(image -> image.state().equals(ImageState.PENDING)));
     }
 
     private void waitForSnapshotToBeCreated() {

@@ -199,7 +199,7 @@
         <resources>
             <resource>
                 <directory>
-                    Resources
+                    resources
                 </directory>
                 <includes>
                     <include>**/*.xml</include>

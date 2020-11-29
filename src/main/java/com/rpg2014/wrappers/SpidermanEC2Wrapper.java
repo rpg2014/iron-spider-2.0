@@ -8,11 +8,15 @@ import software.amazon.awssdk.services.ec2.model.CreateImageRequest;
 import software.amazon.awssdk.services.ec2.model.CreateImageResponse;
 import software.amazon.awssdk.services.ec2.model.DeleteSnapshotRequest;
 import software.amazon.awssdk.services.ec2.model.DeregisterImageRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeImagesRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeImagesResponse;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.DescribeSnapshotsRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeSnapshotsResponse;
 import software.amazon.awssdk.services.ec2.model.Ec2Exception;
+import software.amazon.awssdk.services.ec2.model.Filter;
+import software.amazon.awssdk.services.ec2.model.ImageState;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.ec2.model.InstanceState;
 import software.amazon.awssdk.services.ec2.model.RebootInstancesRequest;
@@ -119,6 +123,7 @@ public class SpidermanEC2Wrapper {
             serverDetails.setServerStopped();
             String amiId = makeAMI(instanceId);
             waitForSnapshotToBeCreated();
+            waitForAMIToBeCreated();
 
             serverDetails.setAmiId(amiId);
             serverDetails.setSnapshotId(getNewestSnapshot());
@@ -143,6 +148,31 @@ public class SpidermanEC2Wrapper {
         } else {
             return false;
         }
+    }
+
+    private void waitForAMIToBeCreated() {
+        DescribeImagesResponse response;
+
+        do {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                throw new InternalServerErrorException(e.getMessage());
+            }
+            DescribeImagesRequest request = DescribeImagesRequest.builder()
+                    .executableUsers("self")
+                    .filters(
+                            Filter.builder().name("state").values("pending", "failed", "error").build()
+                    )
+                    .build();
+            response = ec2Client.describeImages(request);
+            if (response.images().stream().anyMatch(image -> image.state().equals(ImageState.FAILED) || image.state().equals(ImageState.ERROR))) {
+                log.error("There is a failed ami");
+                throw new InternalServerErrorException("There is a failed AMI, Contact Parker");
+            }
+
+        } while (response.images().stream().anyMatch(image -> image.state().equals(ImageState.PENDING)));
     }
 
     private void waitForSnapshotToBeCreated() {

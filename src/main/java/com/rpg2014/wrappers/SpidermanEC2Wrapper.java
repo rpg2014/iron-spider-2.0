@@ -154,6 +154,7 @@ public class SpidermanEC2Wrapper {
         DescribeImagesResponse response;
 
         do {
+            log.info("Waiting for ami to be created");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -167,6 +168,7 @@ public class SpidermanEC2Wrapper {
                     )
                     .build();
             response = ec2Client.describeImages(request);
+            log.info(response.toString());
             if (response.images().stream().anyMatch(image -> image.state().equals(ImageState.FAILED) || image.state().equals(ImageState.ERROR))) {
                 log.error("There is a failed ami");
                 throw new InternalServerErrorException("There is a failed AMI, Contact Parker");

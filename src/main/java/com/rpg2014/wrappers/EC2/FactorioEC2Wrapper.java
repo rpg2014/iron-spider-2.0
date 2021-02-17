@@ -58,7 +58,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
     private static final String USER_DATA_PREAMBLE= "#!/bin/bash\n" +
             "cd /tmp/\n" +
             "curl -L -o /tmp/factorio.tar.xz https://factorio.com/get-download/stable/headless/linux64\n" +
-            "curl -L -o server-settings.json https://raw.githubusercontent.com/rpg2014/iron-spider-2.0/master/server-settings.json\n" +
+            "curl -L -o server-settings.json https://raw.githubusercontent.com/rpg2014/Factorio-server-config/main/server-settings.json\n" +
             "\n" +
             "#get save file from s3\n" +
             "mkdir -p /home/factorio/factorio/saves\n" +
@@ -109,7 +109,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
         //start server
 
         if (!serverDetails.isServerRunning() || !isInstanceUp()) {
-            String userDataString = USER_DATA_PREAMBLE + getS3URL() + USER_DATA_END;
+            String userDataString = USER_DATA_PREAMBLE + "https://factoriosavegame.s3.us-east-2.amazonaws.com/savegame.zip" + USER_DATA_END;
             String userData = Base64.getEncoder().encodeToString(userDataString.getBytes());
 
             RunInstancesRequest runInstancesRequest = RunInstancesRequest.builder()

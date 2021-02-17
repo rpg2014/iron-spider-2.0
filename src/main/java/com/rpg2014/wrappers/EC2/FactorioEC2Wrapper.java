@@ -169,7 +169,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
             try {
                 log.info("SendCommandRequest: {}", sendCommandRequest.toString());
                 response = ssmClient.sendCommand(sendCommandRequest);
-                log.info("finished send command request");
+                log.info(response.toString());
             }catch (Exception e) {
                 log.error("failed to back up factorio save");
                 log.error(e.getCause().toString());

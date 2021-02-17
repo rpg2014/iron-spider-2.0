@@ -1,11 +1,11 @@
 #!/bin/bash
 cd /tmp/
 curl -L -o /tmp/factorio.tar.xz https://factorio.com/get-download/stable/headless/linux64
-git clone https://github.com/rpg2014/iron-spider-2.0.git
+curl -L -o server-settings.json https://raw.githubusercontent.com/rpg2014/iron-spider-2.0/master/server-settings.json
 
 #get save file from s3
 mkdir -p /home/factorio/factorio/saves
-cp /tmp/iron-spider-2.0/server-settings.json /home/factorio/factorio/server-settings.json
+cp /tmp/server-settings.json /home/factorio/factorio/server-settings.json
 cd /home/factorio
 curl -o /home/factorio/factorio/saves/savegame '  '
 

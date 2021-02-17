@@ -58,11 +58,11 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
     private static final String USER_DATA_PREAMBLE= "#!/bin/bash\n" +
             "cd /tmp/\n" +
             "curl -L -o /tmp/factorio.tar.xz https://factorio.com/get-download/stable/headless/linux64\n" +
-            "git clone https://github.com/rpg2014/iron-spider-2.0.git\n" +
+            "curl -L -o server-settings.json https://raw.githubusercontent.com/rpg2014/iron-spider-2.0/master/server-settings.json\n" +
             "\n" +
             "#get save file from s3\n" +
             "mkdir -p /home/factorio/factorio/saves\n" +
-            "cp /tmp/iron-spider-2.0/server-settings.json /home/factorio/factorio/server-settings.json\n" +
+            "cp /tmp/server-settings.json /home/factorio/factorio/server-settings.json\n" +
             "cd /home/factorio\n" +
             "curl -o /home/factorio/factorio/saves/savegame '";
 

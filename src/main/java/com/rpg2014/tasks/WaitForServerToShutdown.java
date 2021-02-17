@@ -21,7 +21,7 @@ public class WaitForServerToShutdown implements Runnable {
                 }
             }
         }else {
-            log.warn("Server might not make it to running so ending task now.");
+            log.warn("Server might not make it to shutdown so ending task now.");
         }
 
     }

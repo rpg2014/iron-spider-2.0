@@ -53,7 +53,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
         return ourInstance;
     }
 
-    private static final String S3_UPLOAD_COMMAND = "aws s3 putobject --bucket 'factoriosavegame' -key 'savegame.zip' --body /home/factorio/factorio/saves/savegame";
+    private static final String S3_UPLOAD_COMMAND = "aws s3 cp /home/factorio/factorio/saves/savegame s3://factoriosavegame/savegame.zip";
 
     private static final String USER_DATA_PREAMBLE= "#!/bin/bash\n" +
             "cd /tmp/\n" +
@@ -169,6 +169,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
             try {
                 log.info("SendCommandRequest: {}", sendCommandRequest.toString());
                 response = ssmClient.sendCommand(sendCommandRequest);
+                log.info("finished send command request");
             }catch (Exception e) {
                 log.error("failed to back up factorio save");
                 log.error(e.getCause().toString());
@@ -181,6 +182,8 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
                     String instanceId = serverDetails.getInstanceId();
                     StopInstancesRequest request = StopInstancesRequest.builder().instanceIds(instanceId).build();
                     ec2Client.stopInstances(request);
+                    log.info("sleeping 5 seconds");
+                    Thread.sleep(5000);
                     TerminateInstancesRequest terminateInstancesRequest =
                             TerminateInstancesRequest.builder().instanceIds(instanceId).build();
                     TerminateInstancesResponse terminateInstancesResult =

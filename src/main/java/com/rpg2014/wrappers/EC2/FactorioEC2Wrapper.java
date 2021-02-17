@@ -3,6 +3,7 @@ package com.rpg2014.wrappers.EC2;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.encryptionsdk.model.ContentType;
 import com.amazonaws.regions.Regions;
@@ -76,7 +77,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
         this.serverDetails = FactorioDyanmoWrapper.getInstance();
         this.s3Client = AmazonS3ClientBuilder.standard()
                 .withRegion(Regions.US_EAST_2)
-                .withCredentials(new ProfileCredentialsProvider())
+                .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
                 .build();
 
         this.ssmClient = SsmClient.builder().region(Region.US_EAST_2).build();

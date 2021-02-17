@@ -58,8 +58,11 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
     private static final String USER_DATA_PREAMBLE= "#!/bin/bash\n" +
             "cd /tmp/\n" +
             "curl -L -o /tmp/factorio.tar.xz https://factorio.com/get-download/stable/headless/linux64\n" +
+            "git clone https://github.com/rpg2014/iron-spider-2.0.git\n" +
+            "\n" +
             "#get save file from s3\n" +
             "mkdir -p /home/factorio/factorio/saves\n" +
+            "cp /tmp/iron-spider-2.0/server-settings.json /home/factorio/factorio/server-settings.json\n" +
             "cd /home/factorio\n" +
             "curl -o /home/factorio/factorio/saves/savegame '";
 
@@ -67,7 +70,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
             "\n" +
             "tar -xJf /tmp/factorio.tar.xz\n" +
             "\n" +
-            "/home/factorio/factorio/bin/x64/factorio --start-server '/home/factorio/factorio/saves/savegame' &";
+            "/home/factorio/factorio/bin/x64/factorio --server-settings '/home/factorio/factorio/server-settings.json' --start-server '/home/factorio/factorio/saves/savegame' &";
 
     private static final String SECURITY_GROUP_ID = "sg-0356a0e4dbad721ac";
 

@@ -53,7 +53,6 @@ public abstract class ServerDynamoWrapper {
         map.put(ITEM_ID, AttributeValue.builder().s(itemId).build());
 
          GetItemRequest request = GetItemRequest.builder().key(map).tableName(TABLE_NAME).build();
-         log.info("getting item: {} from table: {}", itemId, TABLE_NAME);
         return client.getItem(request).item();
     }
 

@@ -165,9 +165,10 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
                     .documentName("AWS-RunShellScript")
                     .parameters(commandMap)
                     .build();
+            SendCommandResponse response;
             try {
                 log.info("SendCommandRequest: {}", sendCommandRequest.toString());
-                SendCommandResponse response = ssmClient.sendCommand(sendCommandRequest);
+                response = ssmClient.sendCommand(sendCommandRequest);
             }catch (Exception e) {
                 log.error("failed to back up factorio save");
                 log.error(e.getCause().toString());

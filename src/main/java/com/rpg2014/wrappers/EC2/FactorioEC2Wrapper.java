@@ -181,13 +181,14 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
                 log.error(e.getMessage());
                 throw new InternalServerErrorException("Failed  to send backup command to factorio server", e);
             }
+            ListCommandsResponse listResponse;
             try {
                 log.info("seeing if command is done");
                 ListCommandsRequest listCommandsRequest = ListCommandsRequest.builder()
                         .commandId(response.command().commandId())
                         .instanceId(serverDetails.getInstanceId())
                         .build();
-                ListCommandsResponse listResponse = ssmClient.listCommands(listCommandsRequest);
+                listResponse = ssmClient.listCommands(listCommandsRequest);
                 log.info(listResponse.toString());
 
             }catch(Exception e ) {
@@ -199,7 +200,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
             try{
                 //if command was successfull  then turn off server
                 log.info("completed count: {}", response.command().completedCount());
-                if (response.command().completedCount() > 0) {
+                if (listResponse.commands().get(0).completedCount() > 0) {
                     log.info("Shutting down server");
                     String instanceId = serverDetails.getInstanceId();
                     StopInstancesRequest request = StopInstancesRequest.builder().instanceIds(instanceId).build();

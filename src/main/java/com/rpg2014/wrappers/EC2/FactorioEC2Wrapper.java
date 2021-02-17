@@ -127,7 +127,8 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
 
                 String instanceId = getInstanceId(runInstancesResponse);
                 serverDetails.setInstanceId(instanceId);
-
+                log.info("sleeping for 5 seconds for server to get allocated");
+                Thread.sleep(5000);
                 StartInstancesRequest request = StartInstancesRequest.builder().instanceIds(instanceId).build();
                 StartInstancesResponse response = ec2Client.startInstances(request);
                 InstanceState state = response.startingInstances().get(0).currentState();

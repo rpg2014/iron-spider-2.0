@@ -198,7 +198,9 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
 
             try{
                 //if command was successfull  then turn off server
+                log.info("completed count: {}", response.command().completedCount());
                 if (response.command().completedCount() > 0) {
+                    log.info("Shutting down server");
                     String instanceId = serverDetails.getInstanceId();
                     StopInstancesRequest request = StopInstancesRequest.builder().instanceIds(instanceId).build();
                     ec2Client.stopInstances(request);

@@ -168,8 +168,13 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
             try {
                 log.info("SendCommandRequest: {}", sendCommandRequest.toString());
                 SendCommandResponse response = ssmClient.sendCommand(sendCommandRequest);
-
-
+            }catch (Exception e) {
+                log.error("failed to back up factorio save");
+                log.error(e.getCause().toString());
+                log.error(e.getMessage());
+                throw new InternalServerErrorException("Failed  to send backup command to factorio server", e);
+            }
+            try{
                 //if command was successfull  then turn off server
                 if (response.command().completedCount() > 1) {
                     String instanceId = serverDetails.getInstanceId();
@@ -188,15 +193,15 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
                     serverDetails.setServerStopped();
                     return success;
                 } else {
-                    log.error("failed to back up factorio save");
+
                     return false;
                 }
             }catch(Exception e){
                 e.printStackTrace();
-                throw new InternalServerErrorException("Failed  to send backup command to factorio server", e);
+                throw new InternalServerErrorException("Failed  to shutdown factorio server", e);
             }
             }else{
-                log.warn("server is already running");
+                log.warn("server is not running");
                 return false;
             }
 

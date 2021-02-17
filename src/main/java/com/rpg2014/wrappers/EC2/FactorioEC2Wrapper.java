@@ -30,6 +30,8 @@ import software.amazon.awssdk.services.ec2.model.TerminateInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.TerminateInstancesResponse;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.SsmClientBuilder;
+import software.amazon.awssdk.services.ssm.model.ListCommandsRequest;
+import software.amazon.awssdk.services.ssm.model.ListCommandsResponse;
 import software.amazon.awssdk.services.ssm.model.SendCommandRequest;
 import software.amazon.awssdk.services.ssm.model.SendCommandResponse;
 
@@ -170,12 +172,30 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
                 log.info("SendCommandRequest: {}", sendCommandRequest.toString());
                 response = ssmClient.sendCommand(sendCommandRequest);
                 log.info(response.toString());
+                log.info("sleeping 10 seconds");
+                Thread.sleep(10000);
+
             }catch (Exception e) {
                 log.error("failed to back up factorio save");
                 log.error(e.getCause().toString());
                 log.error(e.getMessage());
                 throw new InternalServerErrorException("Failed  to send backup command to factorio server", e);
             }
+            try {
+                log.info("seeing if command is done");
+                ListCommandsRequest listCommandsRequest = ListCommandsRequest.builder()
+                        .commandId(response.command().commandId())
+                        .instanceId(serverDetails.getInstanceId())
+                        .build();
+                ListCommandsResponse listResponse = ssmClient.listCommands(listCommandsRequest);
+                log.info(listResponse.toString());
+
+            }catch(Exception e ) {
+                e.printStackTrace();
+                throw new InternalServerErrorException("backup command failed", e);
+            }
+
+
             try{
                 //if command was successfull  then turn off server
                 if (response.command().completedCount() > 1) {

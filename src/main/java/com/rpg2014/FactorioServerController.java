@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
  * Root resource (exposed at "myresource" path)
  */
 
-@Path("/factorio")
+@Path("/factorio/server")
 @Slf4j
 public class FactorioServerController implements ServerControllerInterface {
     TaskRunner taskRunner = new TaskRunner(FactorioEC2Wrapper.getInstance());

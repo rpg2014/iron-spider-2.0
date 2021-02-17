@@ -106,11 +106,11 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
         //start server
 
         if (!serverDetails.isServerRunning() || !isInstanceUp()) {
-            String userDataString = USER_DATA_PREAMBLE+getS3URL()+USER_DATA_END;
+            String userDataString = USER_DATA_PREAMBLE + getS3URL() + USER_DATA_END;
             String userData = Base64.getEncoder().encodeToString(userDataString.getBytes());
 
             RunInstancesRequest runInstancesRequest = RunInstancesRequest.builder()
-                    .imageId("ami-047a51fa27710816e") // AL2 ami id
+                    .imageId("ami-01aab85a5e4a5a0fe") // AL2 ami id
                     .instanceType(System.getenv("FACTORIO_EC2_INSTANCE_TYPE"))
                     .maxCount(1)
                     .iamInstanceProfile(IamInstanceProfileSpecification.builder().arn("arn:aws:iam::593242635608:instance-profile/FactorioEC2Role").build())
@@ -119,22 +119,28 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
                     .securityGroupIds(SECURITY_GROUP_ID)
                     .keyName("Factorio Server")
                     .build();
+            try {
+                RunInstancesResponse runInstancesResponse = ec2Client.runInstances(runInstancesRequest);
 
-            RunInstancesResponse runInstancesResponse = ec2Client.runInstances(runInstancesRequest);
-            String instanceId = getInstanceId(runInstancesResponse);
-            serverDetails.setInstanceId(instanceId);
+                String instanceId = getInstanceId(runInstancesResponse);
+                serverDetails.setInstanceId(instanceId);
 
-            StartInstancesRequest request = StartInstancesRequest.builder().instanceIds(instanceId).build();
-            StartInstancesResponse response = ec2Client.startInstances(request);
-            InstanceState state = response.startingInstances().get(0).currentState();
-            boolean success = state.code() < 32;
-            if (success) {
-                log.info("Started server");
-                serverDetails.setServerRunning();
-            }
+                StartInstancesRequest request = StartInstancesRequest.builder().instanceIds(instanceId).build();
+                StartInstancesResponse response = ec2Client.startInstances(request);
+                InstanceState state = response.startingInstances().get(0).currentState();
+                boolean success = state.code() < 32;
+                if (success) {
+                    log.info("Started server");
+                    serverDetails.setServerRunning();
+                }
                 return success;
+            }catch(Exception e) {
+                e.printStackTrace();
+                throw new InternalServerErrorException("Something went wrong starting the server",e);
+            }
             } else
-                return false;
+            return false;
+
     }
 
 

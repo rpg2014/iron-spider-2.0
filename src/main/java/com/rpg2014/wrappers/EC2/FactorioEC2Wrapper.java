@@ -69,7 +69,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
             "\n" +
             "/home/factorio/factorio/bin/x64/factorio --start-server 'savegame' &";
 
-    private static final String SECURITY_GROUP_ID = "sg-06cbac0bbe596d753";
+    private static final String SECURITY_GROUP_ID = "sg-0356a0e4dbad721ac";
 
     private static FactorioEC2Wrapper ourInstance = new FactorioEC2Wrapper();
     private FactorioEC2Wrapper() {

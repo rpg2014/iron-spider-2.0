@@ -1,6 +1,7 @@
 package com.rpg2014.wrappers.DynamoDB;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeAction;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @AllArgsConstructor
+@Slf4j
 public abstract class ServerDynamoWrapper {
 
      static final String ITEM_ID = "itemId";
@@ -51,6 +53,7 @@ public abstract class ServerDynamoWrapper {
         map.put(ITEM_ID, AttributeValue.builder().s(itemId).build());
 
          GetItemRequest request = GetItemRequest.builder().key(map).tableName(TABLE_NAME).build();
+         log.info("getting item: {} from table: {}", itemId, TABLE_NAME);
         return client.getItem(request).item();
     }
 

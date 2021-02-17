@@ -161,11 +161,12 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
             commands.add(S3_UPLOAD_COMMAND);
             commandMap.put("commands", commands);
             SendCommandRequest sendCommandRequest = SendCommandRequest.builder()
-                    .instanceIds(serverDetails.getInstanceId())
+                    .instanceIds(serverDetails.getInstanceId().toString())
                     .documentName("AWS-RunShellScript")
                     .parameters(commandMap)
                     .build();
             try {
+                log.info("SendCommandRequest: {}", sendCommandRequest.toString());
                 SendCommandResponse response = ssmClient.sendCommand(sendCommandRequest);
 
 

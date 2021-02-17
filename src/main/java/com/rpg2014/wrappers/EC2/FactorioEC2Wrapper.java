@@ -117,7 +117,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
                     .minCount(1)
                     .userData(userData)
                     .securityGroupIds(SECURITY_GROUP_ID)
-                    .keyName("Factorio Server")
+                    .keyName("Factorio-Ohio")
                     .build();
             try {
                 RunInstancesResponse runInstancesResponse = ec2Client.runInstances(runInstancesRequest);

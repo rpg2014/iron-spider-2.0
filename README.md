@@ -6,3 +6,7 @@ and launches the server
 
 can use RunCommand java api to run wget to fetch server, and can do same with save file, getting a secure code.
 then we can map the dns
+
+
+## Current todo
+have a server settings json file in github that the server pulls.  

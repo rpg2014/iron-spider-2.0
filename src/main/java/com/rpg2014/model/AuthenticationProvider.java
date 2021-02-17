@@ -2,7 +2,7 @@ package com.rpg2014.model;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.rpg2014.wrappers.AuthDynamoWrapper;
+import com.rpg2014.wrappers.DynamoDB.AuthDynamoWrapper;
 
 import java.util.concurrent.TimeUnit;
 

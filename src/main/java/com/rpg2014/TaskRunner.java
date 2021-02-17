@@ -1,8 +1,10 @@
 package com.rpg2014;
 
 import com.rpg2014.model.Ec2MethodNames;
-import com.rpg2014.wrappers.SpidermanEC2Wrapper;
+import com.rpg2014.wrappers.EC2.EC2Wrapper;
+import lombok.Builder;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import javax.ws.rs.InternalServerErrorException;
 import java.lang.reflect.InvocationTargetException;
@@ -11,11 +13,14 @@ import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+@RequiredArgsConstructor
 public class TaskRunner {
 
     Executor executor = Executors.newSingleThreadExecutor();
-    private SpidermanEC2Wrapper instance = SpidermanEC2Wrapper.getInstance();
+    @NonNull
+    private EC2Wrapper ec2Wrapper;
 
+//TODO, make the getRunnable methods take in an EC2Wrapper class to run it on.
     public Optional runEC2Task(Ec2MethodNames methodName) {
         Runnable r;
         switch (methodName) {
@@ -37,8 +42,8 @@ public class TaskRunner {
         return () -> {
             Method method = null;
             try {
-                method = instance.getClass().getDeclaredMethod(methodName.getMethodName());
-                method.invoke(instance);
+                method = ec2Wrapper.getClass().getDeclaredMethod(methodName.getMethodName());
+                method.invoke(ec2Wrapper);
             } catch (IllegalAccessException | InvocationTargetException | AssertionError | NoSuchMethodException e) {
                 e.printStackTrace();
                 throw new InternalServerErrorException(e.getMessage());
@@ -49,8 +54,8 @@ public class TaskRunner {
     private Optional invokeMethod(Ec2MethodNames methodName) {
         Method method = null;
         try {
-            method = instance.getClass().getDeclaredMethod(methodName.getMethodName());
-            Object o = method.invoke(instance);
+            method = ec2Wrapper.getClass().getDeclaredMethod(methodName.getMethodName());
+            Object o = method.invoke(ec2Wrapper);
             return Optional.of(o);
         } catch (IllegalAccessException | InvocationTargetException | AssertionError | NoSuchMethodException e) {
             e.printStackTrace();

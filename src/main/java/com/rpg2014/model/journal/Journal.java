@@ -2,7 +2,7 @@ package com.rpg2014.model.journal;
 
 import com.rpg2014.model.EncryptionResult;
 import com.rpg2014.wrappers.EncryptionWrapper;
-import com.rpg2014.wrappers.JournalDDBWrapper;
+import com.rpg2014.wrappers.DynamoDB.JournalDDBWrapper;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;

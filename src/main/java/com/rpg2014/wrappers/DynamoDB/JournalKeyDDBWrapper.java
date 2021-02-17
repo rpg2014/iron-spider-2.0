@@ -1,4 +1,4 @@
-package com.rpg2014.wrappers;
+package com.rpg2014.wrappers.DynamoDB;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 

@@ -1,15 +1,14 @@
 package com.rpg2014.tasks;
 
 import com.rpg2014.model.Status;
-import com.rpg2014.wrappers.MinecraftDynamoWrapper;
-import com.rpg2014.wrappers.SpidermanEC2Wrapper;
+import com.rpg2014.wrappers.EC2.EC2Wrapper;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
 public class WaitForServerToBeUp implements Runnable {
-    private SpidermanEC2Wrapper ec2Wrapper;
+    private EC2Wrapper ec2Wrapper;
     @Override
     public void run() {
         if(ec2Wrapper.getInstanceStatus() == Status.Pending) {

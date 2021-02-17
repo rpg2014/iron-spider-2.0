@@ -1,6 +1,6 @@
-package com.rpg2014.wrappers;
+package com.rpg2014.wrappers.DynamoDB;
 
-import software.amazon.awssdk.regions.Region;
+import lombok.AllArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeAction;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -14,24 +14,18 @@ import javax.ws.rs.InternalServerErrorException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MinecraftDynamoWrapper {
-    private static final String ITEM_ID = "itemId";
-    private static final String AMI_ID = "amiId";
-    private static final String INSTANCE_ID = "instanceId";
+@AllArgsConstructor
+public abstract class ServerDynamoWrapper {
+
+     static final String ITEM_ID = "itemId";
+    static final String VALUE = "value";
     private static final String SERVER_RUNNING = "serverRunning";
-    private static final String SNAPSHOT_ID = "snapshotId";
-    private static final String TABLE_NAME = "minecraftServerDetails";
-    private static final String VALUE = "value";
-    private static MinecraftDynamoWrapper ourInstance = new MinecraftDynamoWrapper();
-    private DynamoDbClient client;
+    private static final String INSTANCE_ID = "instanceId";
+    String TABLE_NAME;
 
-    private MinecraftDynamoWrapper() {
-        client = DynamoDbClient.builder().region(Region.US_EAST_1).build();
-    }
+     static ServerDynamoWrapper ourInstance= null;
 
-    public static MinecraftDynamoWrapper getInstance() {
-        return ourInstance;
-    }
+     DynamoDbClient client= null;
 
     public boolean isServerRunning() {
         return getItem(SERVER_RUNNING).get(VALUE).bool();
@@ -44,15 +38,6 @@ public class MinecraftDynamoWrapper {
     public void setServerStopped() {
         setItem(SERVER_RUNNING, false);
     }
-
-    public String getSnapshotId() {
-        return getItem(SNAPSHOT_ID).get(VALUE).s();
-    }
-
-    public void setSnapshotId(final String snapshotId) {
-        setItem(SNAPSHOT_ID, snapshotId);
-    }
-
     public String getInstanceId() {
         return getItem(INSTANCE_ID).get(VALUE).s();
     }
@@ -61,22 +46,15 @@ public class MinecraftDynamoWrapper {
         setItem(INSTANCE_ID, instanceId);
     }
 
-    public String getAmiID() {
-        return getItem(AMI_ID).get(VALUE).s();
-    }
-
-    public void setAmiId(final String amiId) {
-        setItem(AMI_ID, amiId);
-    }
-
-    private Map<String, AttributeValue> getItem(final String itemId) {
+     Map<String, AttributeValue> getItem(final String itemId) {
         HashMap<String, AttributeValue> map = new HashMap<>();
         map.put(ITEM_ID, AttributeValue.builder().s(itemId).build());
-        GetItemRequest request = GetItemRequest.builder().key(map).tableName(TABLE_NAME).build();
+
+         GetItemRequest request = GetItemRequest.builder().key(map).tableName(TABLE_NAME).build();
         return client.getItem(request).item();
     }
 
-    private void setItem(final String itemId, boolean val) {
+     void setItem(final String itemId, boolean val) {
         HashMap<String, AttributeValue> itemKey = new HashMap<>();
         HashMap<String, AttributeValueUpdate> updatedValues = new HashMap<>();
         itemKey.put(ITEM_ID, AttributeValue.builder().s(itemId).build());
@@ -98,7 +76,7 @@ public class MinecraftDynamoWrapper {
         }
     }
 
-    private void setItem(final String itemId, String val) {
+    void setItem(final String itemId, String val) {
         HashMap<String, AttributeValue> itemKey = new HashMap<>();
         HashMap<String, AttributeValueUpdate> updatedValues = new HashMap<>();
         itemKey.put(ITEM_ID, AttributeValue.builder().s(itemId).build());

@@ -1,6 +1,7 @@
-package com.rpg2014.wrappers;
+package com.rpg2014.wrappers.EC2;
 
 import com.rpg2014.model.Status;
+import com.rpg2014.wrappers.DynamoDB.MinecraftDynamoWrapper;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
@@ -39,7 +40,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class SpidermanEC2Wrapper {
+public class SpidermanEC2Wrapper  implements EC2Wrapper{
     private static final String AMI_NAME = "Minecraft_Server";
     private static final String SECURITY_GROUP_ID = "sg-0bcf97234db49f1d4";
     private static final String AWS_ACCOUNT_ID = System.getenv("AWS_ACCOUNT_ID");
@@ -273,7 +274,7 @@ public class SpidermanEC2Wrapper {
         return response.reservations().get(0).instances().get(0).publicIpAddress();
     }
 
-    private boolean isInstanceUp() {
+    public boolean isInstanceUp() {
         String instanceId = serverDetails.getInstanceId();
         DescribeInstancesRequest request = DescribeInstancesRequest.builder().instanceIds(instanceId).build();
         DescribeInstancesResponse response = ec2Client.describeInstances(request);
@@ -287,7 +288,7 @@ public class SpidermanEC2Wrapper {
         return isUp;
     }
 
-    private boolean isInstanceStopped() {
+    public boolean isInstanceStopped() {
         DescribeInstancesRequest request = DescribeInstancesRequest.builder()
                 .instanceIds(serverDetails.getInstanceId()).build();
         DescribeInstancesResponse response = ec2Client.describeInstances(request);

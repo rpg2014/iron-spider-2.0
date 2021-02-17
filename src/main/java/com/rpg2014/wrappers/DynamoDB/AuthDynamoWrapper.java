@@ -1,4 +1,4 @@
-package com.rpg2014.wrappers;
+package com.rpg2014.wrappers.DynamoDB;
 
 import com.rpg2014.model.AuthorizationDetails;
 import lombok.extern.slf4j.Slf4j;

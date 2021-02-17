@@ -39,6 +39,10 @@ public class Route53Wrapper {
     }
 
     public boolean updateMinecraftDNS(String ipAddress) {
+        return updateDNSForURL(System.getenv("minecraftURL"),ipAddress);
+    }
+    public boolean updateDNSForURL(String url, String ipAddress){
+        log.info("Updating url: {}, to ip: {}", url, ipAddress);
         ChangeResourceRecordSetsRequest request = ChangeResourceRecordSetsRequest.builder().hostedZoneId(HOSTED_ZONE_ID).changeBatch(
                 ChangeBatch.builder()
                         .changes(
@@ -46,7 +50,7 @@ public class Route53Wrapper {
                                         .action(ChangeAction.UPSERT)
                                         .resourceRecordSet(
                                                 ResourceRecordSet.builder()
-                                                        .name(System.getenv("minecraftURL"))
+                                                        .name(url)
                                                         .resourceRecords(
                                                                 ResourceRecord.builder().value(ipAddress).build())
                                                         .ttl(300L)

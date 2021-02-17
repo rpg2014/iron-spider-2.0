@@ -53,7 +53,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
         return ourInstance;
     }
 
-    private static final String S3_UPLOAD_COMMAND = "aws s3 putobject --bucket 'factoriosavegame' -key 'savegame.zip' --body savegame";
+    private static final String S3_UPLOAD_COMMAND = "aws s3 putobject --bucket 'factoriosavegame' -key 'savegame.zip' --body /home/factorio/factorio/saves/savegame";
 
     private static final String USER_DATA_PREAMBLE= "#!/bin/bash\n" +
             "cd /tmp/\n" +

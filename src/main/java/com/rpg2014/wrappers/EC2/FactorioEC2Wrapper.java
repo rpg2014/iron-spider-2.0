@@ -69,7 +69,7 @@ public class FactorioEC2Wrapper implements EC2Wrapper {
             "curl -o /home/factorio/factorio/saves/savegame '";
 
     private static final String USER_DATA_END = "'\n" +
-            "\n" +
+            "chmod -R a+rw /home/factorio/factorio\n" +
             "tar -xJf /tmp/factorio.tar.xz\n" +
             "\n" +
             "/home/factorio/factorio/bin/x64/factorio --server-settings '/home/factorio/factorio/server-settings.json' --start-server '/home/factorio/factorio/saves/savegame' &";

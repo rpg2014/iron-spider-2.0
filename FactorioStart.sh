@@ -8,7 +8,7 @@ mkdir -p /home/factorio/factorio/saves
 cp /tmp/server-settings.json /home/factorio/factorio/server-settings.json
 cd /home/factorio
 curl -o /home/factorio/factorio/saves/savegame 'https://factoriosavegame.s3.us-east-2.amazonaws.com/savegame.zip'
-
+chmod -R a+rw /home/factorio/factorio
 tar -xJf /tmp/factorio.tar.xz
 
 /home/factorio/factorio/bin/x64/factorio --server-settings '/home/factorio/factorio/server-settings.json' --start-server '/home/factorio/factorio/saves/savegame' &

@@ -24,12 +24,12 @@ public class AuthenticationProvider {
         }
         authDetails = dynamoWrapper.isAuthorized(username);
         put(username, authDetails);
-        dynamoWrapper.startedServer(authDetails);
         return authDetails.isAllowedToStartServer();
     }
 
     private void put(final String username, final AuthorizationDetails authDetails) {
         if (authDetails.isAllowedToStartServer()) {
+            dynamoWrapper.startedServer(authDetails);
             trueCache.put(username, authDetails);
         } else {
             falseCache.put(username, authDetails);
